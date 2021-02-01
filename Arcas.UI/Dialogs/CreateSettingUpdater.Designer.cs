@@ -35,7 +35,6 @@
             this.tbTfsProject = new System.Windows.Forms.TextBox();
             this.tbSetFileServerFolder = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.btSelectProjectTFS = new System.Windows.Forms.Button();
             this.tbFileNameSet = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -64,6 +63,8 @@
             this.label11 = new System.Windows.Forms.Label();
             this.tbNumberTask = new System.Windows.Forms.TextBox();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.export = new System.Windows.Forms.Button();
+            this.import = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -104,7 +105,6 @@
             this.tbTfsProject.ReadOnly = true;
             this.tbTfsProject.Size = new System.Drawing.Size(306, 20);
             this.tbTfsProject.TabIndex = 10004;
-            this.tbTfsProject.Validating += new System.ComponentModel.CancelEventHandler(this.tbTfsProject_Validating);
             // 
             // tbSetFileServerFolder
             // 
@@ -122,17 +122,6 @@
             this.label3.Size = new System.Drawing.Size(107, 41);
             this.label3.TabIndex = 10006;
             this.label3.Text = "Путь на сервере для хранения файла настроек";
-            // 
-            // btSelectProjectTFS
-            // 
-            this.btSelectProjectTFS.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btSelectProjectTFS.Location = new System.Drawing.Point(448, 52);
-            this.btSelectProjectTFS.Name = "btSelectProjectTFS";
-            this.btSelectProjectTFS.Size = new System.Drawing.Size(24, 23);
-            this.btSelectProjectTFS.TabIndex = 10005;
-            this.btSelectProjectTFS.UseVisualStyleBackColor = true;
-            this.btSelectProjectTFS.Click += new System.EventHandler(this.btSelectProjectTFS_Click);
-            this.btSelectProjectTFS.Validating += new System.ComponentModel.CancelEventHandler(this.tbTfsProject_Validating);
             // 
             // tbFileNameSet
             // 
@@ -158,7 +147,6 @@
             this.groupBox1.Controls.Add(this.btPathFoldertoFileSet);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.btSelectProjectTFS);
             this.groupBox1.Controls.Add(this.tbSetFileServerFolder);
             this.groupBox1.Controls.Add(this.tbTfsProject);
             this.groupBox1.Controls.Add(this.label2);
@@ -175,13 +163,12 @@
             // btPathFoldertoFileSet
             // 
             this.btPathFoldertoFileSet.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btPathFoldertoFileSet.Enabled = false;
             this.btPathFoldertoFileSet.Location = new System.Drawing.Point(448, 126);
             this.btPathFoldertoFileSet.Name = "btPathFoldertoFileSet";
             this.btPathFoldertoFileSet.Size = new System.Drawing.Size(24, 23);
             this.btPathFoldertoFileSet.TabIndex = 10010;
             this.btPathFoldertoFileSet.UseVisualStyleBackColor = true;
-            this.btPathFoldertoFileSet.Click += new System.EventHandler(this.button1_Click);
+            this.btPathFoldertoFileSet.Click += new System.EventHandler(this.btPathFoldertoFileSet_Click);
             this.btPathFoldertoFileSet.Validating += new System.ComponentModel.CancelEventHandler(this.tbSetFileServerFolder_Validating);
             // 
             // groupBox2
@@ -292,7 +279,6 @@
             // btScriptFolder
             // 
             this.btScriptFolder.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btScriptFolder.Enabled = false;
             this.btScriptFolder.Location = new System.Drawing.Point(445, 8);
             this.btScriptFolder.Name = "btScriptFolder";
             this.btScriptFolder.Size = new System.Drawing.Size(24, 23);
@@ -419,11 +405,35 @@
             // 
             this.errorProvider.ContainerControl = this;
             // 
+            // export
+            // 
+            this.export.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.export.Location = new System.Drawing.Point(463, 577);
+            this.export.Name = "export";
+            this.export.Size = new System.Drawing.Size(21, 23);
+            this.export.TabIndex = 10015;
+            this.export.Text = "Экспорт";
+            this.export.UseVisualStyleBackColor = true;
+            this.export.Click += new System.EventHandler(this.export_Click);
+            // 
+            // import
+            // 
+            this.import.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.import.Location = new System.Drawing.Point(490, 577);
+            this.import.Name = "import";
+            this.import.Size = new System.Drawing.Size(21, 23);
+            this.import.TabIndex = 10016;
+            this.import.Text = "Импорт";
+            this.import.UseVisualStyleBackColor = true;
+            this.import.Click += new System.EventHandler(this.import_Click);
+            // 
             // CreateSettingUpdater
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(538, 663);
+            this.Controls.Add(this.import);
+            this.Controls.Add(this.export);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.tbNumberTask);
             this.Controls.Add(this.groupBox2);
@@ -438,6 +448,8 @@
             this.Controls.SetChildIndex(this.groupBox2, 0);
             this.Controls.SetChildIndex(this.tbNumberTask, 0);
             this.Controls.SetChildIndex(this.label11, 0);
+            this.Controls.SetChildIndex(this.export, 0);
+            this.Controls.SetChildIndex(this.import, 0);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -459,7 +471,6 @@
         private System.Windows.Forms.TextBox tbTfsProject;
         private System.Windows.Forms.TextBox tbSetFileServerFolder;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btSelectProjectTFS;
         private System.Windows.Forms.TextBox tbFileNameSet;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -488,5 +499,7 @@
         private System.Windows.Forms.TextBox tbFormatBinPrefix;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button import;
+        private System.Windows.Forms.Button export;
     }
 }
