@@ -48,12 +48,13 @@ namespace Arcas.Settings
         {
             public Type ConType { get; set; }
             public byte[] AssembyRawBytes { get; set; }
+            public List<byte[]> LinkedAssembyRawBytes { get; set; }
             public AssemblyName AssembyNameFile { get; set; }
             public override string ToString()
             {
                 if (ConType == null)
                     return "<Добавить сборку>";
-                return ConType.ToString();
+                return $"{ConType.ToString()} | {AssembyNameFile.ToString()}";
             }
         }
 
@@ -63,7 +64,7 @@ namespace Arcas.Settings
 
             errorTracker = new ErrorTracker(errorProvider);
 
-            cmbDbConectionType.Items.Add(new DbTypeItem() { ConType = typeof(SqlConnection) });
+            cmbDbConectionType.Items.Add(new DbTypeItem() { ConType = typeof(SqlConnection), AssembyNameFile = typeof(SqlConnection).Assembly.GetName() });
             cmbDbConectionType.Items.Add(new DbTypeItem());
             cmbDbConectionType.SelectedIndex = 0;
 
@@ -77,7 +78,6 @@ namespace Arcas.Settings
         private WrapTfs wrapTfs = new WrapTfs();
         private TfsDbLink editLink = null;
 
-
         private UpdateDbSetting dbSettingGet(DbTypeItem dbItem)
         {
             return new UpdateDbSetting()
@@ -85,6 +85,7 @@ namespace Arcas.Settings
                 ServerPathScripts = tbFolderForScripts.Text,
                 TypeConnectionFullName = dbItem.ConType.ToString(),
                 AssemplyWithImplementDbConnection = dbItem.AssembyRawBytes,
+                LinkedAssemblyDbConnection = dbItem.LinkedAssembyRawBytes,
                 ConnectionStringModelDb = tbConnectionString.Text,
                 ScriptPartBeforeBodyWithTran = tbPartBeforescript.Text.GetNullIfIsNullOrWhiteSpace(),
                 ScriptPartAfterBodyWithTran = tbPartAfterScript.Text.GetNullIfIsNullOrWhiteSpace(),
@@ -96,7 +97,6 @@ namespace Arcas.Settings
                 }
             };
         }
-
 
         private void dbSettingLoad(UpdateDbSetting upsets)
         {
@@ -128,7 +128,16 @@ namespace Arcas.Settings
                 }
 
                 if (conn == null)
+                {
+
                     conAss = AppDomain.CurrentDomain.Load(upsets.AssemplyWithImplementDbConnection);
+
+                    foreach (var la in upsets.LinkedAssemblyDbConnection ?? new List<byte[]>())
+                        AppDomain.CurrentDomain.Load(la);
+
+                }
+
+
 
                 conn = conAss.ExportedTypes.FirstOrDefault(x => x.FullName == upsets.TypeConnectionFullName);
 
@@ -151,6 +160,7 @@ namespace Arcas.Settings
             {
                 var item = new DbTypeItem();
                 item.AssembyRawBytes = upsets.AssemplyWithImplementDbConnection;
+                item.LinkedAssembyRawBytes = upsets.LinkedAssemblyDbConnection;
                 item.ConType = conn;
                 item.AssembyNameFile = conn.Assembly.GetName();
 
@@ -194,7 +204,6 @@ namespace Arcas.Settings
 
                 try
                 {
-
                     var revStr = new String(editLink.ServerPathToSettings.Reverse().ToArray());
                     var revFileName = revStr.SubString(0, revStr.IndexOf("/"));
                     var revServPath = revStr.SubString(revStr.IndexOf("/") + 1);
@@ -339,39 +348,44 @@ namespace Arcas.Settings
 
             var filePathAssembly = Dialogs.FileBrowser(
                     Owner: this,
-                    Title: "Выбор сборки с реализацией DbConnection",
+                    Title: "Выбор сборки с реализацией DbConnection + зависимые",
                     DefaultExt: ".ddl",
                     Filter: "Assemblys dll|*.dll",
-                    AddExtension: false).FirstOrDefault();
+                    AddExtension: false,
+                    Multiselect: true);
 
-            if (filePathAssembly.IsNullOrWhiteSpace())
+            if (!filePathAssembly.Any())
             {
                 cmbDbConectionType.SelectedIndex = 0;
                 return;
             }
 
-            Assembly fileAssembly = null;
-            byte[] fileAssemblyRaw = null;
+            Dictionary<string, Tuple<Assembly, byte[]>> assemlys = new Dictionary<string, Tuple<Assembly, byte[]>>();
 
             try
             {
-                var assName = AssemblyName.GetAssemblyName(filePathAssembly);
-
-                fileAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == assName.FullName);
-                fileAssemblyRaw = File.ReadAllBytes(filePathAssembly);
-
-                if (fileAssembly == null)
-                    fileAssembly = Assembly.LoadFile(filePathAssembly);
-                else
+                foreach (var filePathA in filePathAssembly)
                 {
-                    var setItem = cmbDbConectionType.Items.Cast<DbTypeItem>().FirstOrDefault(x => x.AssembyNameFile != null && x.AssembyNameFile.FullName == assName.FullName);
-                    if (setItem != null)
-                    {
-                        cmbDbConectionType.SelectedItem = setItem;
-                        return;
-                    }
-                }
+                    var assName = AssemblyName.GetAssemblyName(filePathA);
 
+                    var fileAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == assName.FullName);
+
+                    var fileAssemblyRaw = File.ReadAllBytes(filePathA);
+
+                    if (fileAssembly == null)
+                        fileAssembly = Assembly.Load(fileAssemblyRaw);
+                    else
+                    {
+                        var setItem = cmbDbConectionType.Items.Cast<DbTypeItem>().FirstOrDefault(x => x.AssembyNameFile != null && x.AssembyNameFile.FullName == assName.FullName);
+                        if (setItem != null)
+                        {
+                            cmbDbConectionType.SelectedItem = setItem;
+                            return;
+                        }
+                    }
+
+                    assemlys.Add(filePathA, Tuple.Create(fileAssembly, fileAssemblyRaw));
+                }
             }
             catch (Exception ex)
             {
@@ -380,12 +394,17 @@ namespace Arcas.Settings
                 return;
             }
 
-            foreach (var asType in fileAssembly.ExportedTypes.Where(x => x.IsSubclassOf(typeof(DbConnection))))
+            foreach (var asType in assemlys.SelectMany(x => x.Value.Item1.ExportedTypes).Where(x => x.IsSubclassOf(typeof(DbConnection))).ToArray())
             {
+                var dEl = assemlys.First(x => x.Value.Item1.FullName == asType.Assembly.FullName);
                 var item = new DbTypeItem();
                 item.ConType = asType;
-                item.AssembyRawBytes = fileAssemblyRaw;
-                item.AssembyNameFile = fileAssembly.GetName();
+                item.AssembyRawBytes = dEl.Value.Item2;
+
+                var bp = assemlys.Where(x => x.Key != dEl.Key).Select(x => x.Value.Item2).ToList();
+                item.LinkedAssembyRawBytes = bp;
+
+                item.AssembyNameFile = dEl.Value.Item1.GetName();
                 cmbDbConectionType.Items.Insert(cmbDbConectionType.Items.Count - 1, item);
                 cmbDbConectionType.SelectedItem = item;
             }
@@ -412,6 +431,7 @@ namespace Arcas.Settings
             try
             {
                 DomainContext.InitConnection(selitem.ConType, context);
+
                 Dialogs.InformationF(this, "Тест соединения успешен.");
             }
             catch (Exception ex)

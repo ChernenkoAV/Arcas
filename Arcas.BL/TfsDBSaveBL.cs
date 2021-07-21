@@ -175,7 +175,23 @@ namespace Arcas.BL
                         }
 
                         if (conn == null)
+                        {
                             conAss = AppDomain.CurrentDomain.Load(upsets.AssemplyWithImplementDbConnection);
+
+                            foreach (var linkedAs in upsets.LinkedAssemblyDbConnection)
+                            {
+                                var temp = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
+                                File.WriteAllBytes(temp, linkedAs);
+                                var asName = AssemblyName.GetAssemblyName(temp);
+                                File.Delete(temp);
+
+                                if (AppDomain.CurrentDomain.GetAssemblies().Any(x => x.GetName() == asName))
+                                    continue;
+
+                                AppDomain.CurrentDomain.Load(linkedAs);
+                            }
+
+                        }
 
                         conn = conAss.ExportedTypes.FirstOrDefault(x => x.FullName == upsets.TypeConnectionFullName);
 

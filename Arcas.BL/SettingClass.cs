@@ -90,6 +90,11 @@ namespace Arcas.Settings
         public byte[] AssemplyWithImplementDbConnection { get; set; }
 
         /// <summary>
+        /// Бинарные образы сборок, от которых зависит основная сборка с ркализацией DbConnection. 
+        /// </summary>
+        public List<byte[]> LinkedAssemblyDbConnection { get; set; }
+
+        /// <summary>
         /// Строка соединения с БД для накатки (модельная БД)
         /// </summary>
         public String ConnectionStringModelDb { get; set; }
