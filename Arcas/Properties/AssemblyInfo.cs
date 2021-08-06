@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Аркас")]
 [assembly: AssemblyDescription("Утилита для разработчика")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Cav.Arcas")]
+// [assembly: AssemblyProduct("Аркас")]
 [assembly: AssemblyCopyright("©Cav")]
 [assembly: AssemblyTrademark("©Cav")]
 [assembly: AssemblyCulture("")]
