@@ -110,55 +110,7 @@
       <Project>{dc1b475c-b6d8-49a5-8bba-3b9730e4a6d2}</Project>
       <Name>Arcas.UI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Arcas.WPF\Arcas.WPF.csproj">
-      <Project>{A9922D5D-B41A-4E29-BBEA-955368921407}</Project>
-      <Name>Arcas.WPF</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <UsingTask TaskName="GenAppVer" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <Major ParameterType="System.Int32" Output="true" />
-      <Minor ParameterType="System.Int32" Output="true" />
-      <Build ParameterType="System.Int32" Output="true" />
-      <Revision ParameterType="System.Int32" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System" />
-      <Code Type="Fragment" Language="cs"><![CDATA[
-            Major = DateTime.Now.Year;
-            Minor = int.Parse(DateTime.Today.ToString("MMdd"));
-            Build = DateTime.Now.Hour;
-            Revision = DateTime.Now.Minute;
-            //AppVer = new Version(DateTime.Now.Year, int.Parse(DateTime.Today.ToString("MMdd")), DateTime.Now.Hour, DateTime.Now.Minute);
-            //AppVer = DateTime.Today.ToString("yyyy") + "."+ DateTime.Today.ToString("MMdd") + "." + DateTime.Now.Hour.ToString() + "." + DateTime.Now.Minute.ToString();
-            ]]></Code>
-    </Task>
-  </UsingTask>
-  <Target Name="BeforeCompile">
-    <GenAppVer>
-      <Output TaskParameter="Major" PropertyName="Major" />
-      <Output TaskParameter="Minor" PropertyName="Minor" />
-      <Output TaskParameter="Build" PropertyName="Build" />
-      <Output TaskParameter="Revision" PropertyName="Revision" />
-    </GenAppVer>
-    <PropertyGroup>
-      <ApplicationVersion>$(Major).$(Minor).$(Build).$(Revision)</ApplicationVersion>
-    </PropertyGroup>
-    <Message Text="------- Application version $(ApplicationVersion)" Importance="High" />
-  </Target>
-  <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Release'">
-    <Exec Command="PowerShell -NoProfile -ExecutionPolicy Bypass -Command &quot;&amp; '$(SolutionDir)\piblishToGitHub.ps1'&quot; -TargetDir '$(TargetDir)'" />
-  </Target>
-  <Target Name="CustomPostPublishActions" AfterTargets="AfterPublish">
-    <Exec Command="echo Post-PUBLISH event: Active configuration is: $(ConfigurationName)" />
-  </Target>
 </Project>

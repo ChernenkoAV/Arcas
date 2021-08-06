@@ -45,15 +45,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="amqmdnet, Version=8.0.0.7, Culture=neutral, PublicKeyToken=dd3cb1c9aae9ec97, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSphereMqClient.8.0.0.7\lib\net20\amqmdnet.dll</HintPath>
+      <HintPath>..\..\packages\WebSphereMqClient.8.0.0.7\lib\net20\amqmdnet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Cav.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cav.Core.6.0.0\lib\net461\Cav.Core.dll</HintPath>
+      <HintPath>..\..\packages\Cav.Core.6.0.0\lib\net461\Cav.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Cav.Tfs, Version=4.0.2.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cav.Tfs.4.0.2\lib\net461\Cav.Tfs.dll</HintPath>
+      <HintPath>..\..\packages\Cav.Tfs.4.0.2\lib\net461\Cav.Tfs.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

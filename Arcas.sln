@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcas.BL", "Arcas.BL\Arcas.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcas.UI", "Arcas.UI\Arcas.UI.csproj", "{DC1B475C-B6D8-49A5-8BBA-3B9730E4A6D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcas.WPF", "Arcas.WPF\Arcas.WPF.csproj", "{A9922D5D-B41A-4E29-BBEA-955368921407}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{DC1B475C-B6D8-49A5-8BBA-3B9730E4A6D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC1B475C-B6D8-49A5-8BBA-3B9730E4A6D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC1B475C-B6D8-49A5-8BBA-3B9730E4A6D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9922D5D-B41A-4E29-BBEA-955368921407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9922D5D-B41A-4E29-BBEA-955368921407}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9922D5D-B41A-4E29-BBEA-955368921407}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9922D5D-B41A-4E29-BBEA-955368921407}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
