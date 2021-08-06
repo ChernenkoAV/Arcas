@@ -7,9 +7,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Аркас")]
 [assembly: AssemblyDescription("Утилита для разработчика")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Сам сделал")]
 [assembly: AssemblyProduct("Cav.Arcas")]
-[assembly: AssemblyCopyright("Черненко А.В.")]
+[assembly: AssemblyCopyright("©Cav")]
 [assembly: AssemblyTrademark("©Cav")]
 [assembly: AssemblyCulture("")]
 
@@ -28,5 +27,5 @@ using System.Runtime.InteropServices;
 //   Номер сборки
 //      Редакция
 //
-[assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.2.3.4")]
+[assembly: AssemblyVersion("0.0.1")]
+[assembly: AssemblyFileVersion("0.0.1.0")]
