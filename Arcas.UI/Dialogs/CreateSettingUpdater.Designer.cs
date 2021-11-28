@@ -443,7 +443,7 @@
             this.Name = "CreateSettingUpdater";
             this.ShowIcon = false;
             this.Text = "Создание связки TFS-DB";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CreateSettingUpdater_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.createSettingUpdater_FormClosing);
             this.Controls.SetChildIndex(this.groupBox1, 0);
             this.Controls.SetChildIndex(this.groupBox2, 0);
             this.Controls.SetChildIndex(this.tbNumberTask, 0);

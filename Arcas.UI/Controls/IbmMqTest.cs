@@ -43,7 +43,7 @@ namespace Arcas.Controls
 
             try
             {
-                MqSettingT sets = CreateMqSetting();
+                MqSettingT sets = createMqSetting();
 
                 tbMessageID.Text = mqBL.Send(
                     sets,
@@ -60,7 +60,7 @@ namespace Arcas.Controls
             }
         }
 
-        private MqSettingT CreateMqSetting()
+        private MqSettingT createMqSetting()
         {
             MqSettingT sets = new MqSettingT();
             sets.Host = tbHost.Text.GetNullIfIsNullOrWhiteSpace();
@@ -78,7 +78,7 @@ namespace Arcas.Controls
             tbPutDate.Text = null;
             tbBodyMessage.Text = null;
 
-            MqSettingT sets = CreateMqSetting();
+            MqSettingT sets = createMqSetting();
 
             try
             {
@@ -110,7 +110,7 @@ namespace Arcas.Controls
             }
         }
 
-        private string FillAddProp(String xml)
+        private string fillAddProp(String xml)
         {
             addpoplist.Clear();
             var xl = XDocument.Parse(xml);
@@ -129,10 +129,7 @@ namespace Arcas.Controls
             }
 
             if (xl.Root.Name.LocalName == "StatusMessage")
-            {
                 addpoplist.Add(new KeyValuePair<string, string>("Method", "SetFilesAndStatus"));
-            }
-
 
             return xl.ToString();
         }
@@ -151,9 +148,9 @@ namespace Arcas.Controls
                     tbMessageID.Text = null;
                     tbPutDate.Text = null;
                     tbBodyMessage.Text = File.ReadAllText(file);
-                    FillAddProp(tbBodyMessage.Text);
+                    fillAddProp(tbBodyMessage.Text);
 
-                    MqSettingT sets = CreateMqSetting();
+                    MqSettingT sets = createMqSetting();
 
                     tbMessageID.Text = mqBL.Send(
                         sets,
@@ -175,7 +172,7 @@ namespace Arcas.Controls
         {
             try
             {
-                FillAddProp(tbBodyMessage.Text);
+                fillAddProp(tbBodyMessage.Text);
             }
             catch { }
         }

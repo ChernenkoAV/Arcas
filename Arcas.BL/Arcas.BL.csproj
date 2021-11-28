@@ -48,13 +48,17 @@
       <HintPath>..\..\packages\WebSphereMqClient.8.0.0.7\lib\net20\amqmdnet.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Cav.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Cav.Core.6.0.0\lib\net461\Cav.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Cav.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Cav.Core.7.3.6\lib\net461\Cav.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Cav.Tfs, Version=4.0.2.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Cav.Tfs.4.0.2\lib\net461\Cav.Tfs.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Cav.Tfs, Version=4.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Cav.Tfs.4.0.3\lib\net461\Cav.Tfs.dll</HintPath>
+    </Reference>
+    <Reference Include="Cav.WinForms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Cav.WinForms.4.0.1\lib\net461\Cav.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

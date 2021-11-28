@@ -41,8 +41,6 @@ namespace Arcas.Controls
 
                 var sxml = XDocument.Parse(tbSourseXML.Text);
                 tbResTransform.Text = XDocument.Parse(sxml.XMLTransform(tbXsltText.Text)).ToString();
-
-
             }
             catch (Exception ex)
             {
@@ -84,9 +82,5 @@ namespace Arcas.Controls
                 MessageBox.Show(this, ex.Expand());
             }
         }
-
-
-
-
     }
 }

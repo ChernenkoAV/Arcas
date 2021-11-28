@@ -16,10 +16,9 @@ namespace Arcas.Controls
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event ProgressStateDelegat StateProgress;
 
-        protected void SetSateProgress(String Message)
+        protected void SetSateProgress(String message)
         {
-            if (StateProgress != null)
-                StateProgress(Message);
+            StateProgress?.Invoke(message);
         }
     }
 }

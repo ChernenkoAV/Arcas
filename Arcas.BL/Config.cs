@@ -27,7 +27,6 @@ namespace Arcas
         public WsdlXsdGenSettingT WsdlXsdGenSetting { get; set; }
     }
 
-
     public struct WsdlXsdGenSettingT
     {
         public String Wsdl_PathToWsdl { get; set; }

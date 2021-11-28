@@ -37,10 +37,9 @@ namespace Arcas.Settings
 
             public override string ToString()
             {
-                if (!mErrors.Any())
-                    return null;
-
-                return mErrors.Select(x => mProvider.GetError(x)).JoinValuesToString(Environment.NewLine);
+                return !mErrors.Any()
+                ? null
+                : mErrors.Select(x => mProvider.GetError(x)).JoinValuesToString(Environment.NewLine);
             }
         }
 
@@ -52,9 +51,9 @@ namespace Arcas.Settings
             public AssemblyName AssembyNameFile { get; set; }
             public override string ToString()
             {
-                if (ConType == null)
-                    return "<Добавить сборку>";
-                return $"{ConType.ToString()} | {AssembyNameFile.ToString()}";
+                return ConType == null
+                ? "<Добавить сборку>"
+                : $"{ConType.ToString()} | {AssembyNameFile.ToString()}";
             }
         }
 
@@ -68,11 +67,10 @@ namespace Arcas.Settings
             cmbDbConectionType.Items.Add(new DbTypeItem());
             cmbDbConectionType.SelectedIndex = 0;
 
-            ValidateAll();
+            validateAll();
         }
 
         public TFSDBList ItemsInSets { get; set; }
-
 
         private ErrorTracker errorTracker = null;
         private WrapTfs wrapTfs = new WrapTfs();
@@ -134,10 +132,7 @@ namespace Arcas.Settings
 
                     foreach (var la in upsets.LinkedAssemblyDbConnection ?? new List<byte[]>())
                         AppDomain.CurrentDomain.Load(la);
-
                 }
-
-
 
                 conn = conAss.ExportedTypes.FirstOrDefault(x => x.FullName == upsets.TypeConnectionFullName);
 
@@ -168,7 +163,7 @@ namespace Arcas.Settings
                 cmbDbConectionType.SelectedItem = item;
             }
 
-            ValidateAll();
+            validateAll();
         }
 
         public void EditedSet(TfsDbLink tfsDbLinckSet)
@@ -185,7 +180,7 @@ namespace Arcas.Settings
             tbTfsProject.Text = editLink.ServerUri.OriginalString;
             tbSettingName.Text = editLink.Name;
 
-            ValidateAll();
+            validateAll();
 
             if (editLink.ServerPathToSettings.IsNullOrWhiteSpace())
                 return;
@@ -238,7 +233,7 @@ namespace Arcas.Settings
 
         #region валидаторы
 
-        private void ValidateAll()
+        private void validateAll()
         {
             tbSettingName_Validating(null, null);
             tbSetFileName_Validating(null, null);
@@ -273,7 +268,6 @@ namespace Arcas.Settings
                 errorTracker.SetError(tbFileNameSet, "Не указано наименование файла настроек");
             else
                 errorTracker.SetError(tbFileNameSet, null);
-
 
             tbFileNameSet.Text = tbFileNameSet.Text.ReplaceInvalidPathChars();
         }
@@ -449,7 +443,7 @@ namespace Arcas.Settings
             e.Handled = !Char.IsDigit(e.KeyChar);
         }
 
-        private void CreateSettingUpdater_FormClosing(object sender, FormClosingEventArgs e)
+        private void createSettingUpdater_FormClosing(object sender, FormClosingEventArgs e)
         {
             if ((e.CloseReason != CloseReason.UserClosing & e.CloseReason != CloseReason.None) ||
                 this.DialogResult != DialogResult.OK)

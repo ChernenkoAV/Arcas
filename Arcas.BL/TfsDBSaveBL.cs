@@ -13,16 +13,15 @@ using Cav.DataAcces;
 
 namespace Arcas.BL
 {
-    public delegate void ProgressStateDelegat(String Message);
+    public delegate void ProgressStateDelegat(String message);
 
     public class TfsDBSaveBL
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event ProgressStateDelegat StatusMessages;
-        private void SendStat(String mess)
+        private void sendStat(string mess)
         {
-            if (StatusMessages != null)
-                StatusMessages(mess);
+            StatusMessages?.Invoke(mess);
         }
 
         Adapter adapter = new Adapter();
@@ -37,10 +36,10 @@ namespace Arcas.BL
             using (TFSRoutineBL tfsbl = new TFSRoutineBL())
             {
                 // Проверяем настройки TFS
-                SendStat("Подключаемся к TFS");
+                sendStat("Подключаемся к TFS");
                 tfsbl.VersionControl(tdlink.ServerUri);
 
-                SendStat("Проверка несохраненных данных в шельве");
+                sendStat("Проверка несохраненных данных в шельве");
                 return tfsbl.ExistsShelveset();
             }
         }
@@ -55,19 +54,17 @@ namespace Arcas.BL
             using (TFSRoutineBL tfsbl = new TFSRoutineBL())
             {
                 // Проверяем настройки TFS
-                SendStat("Подключаемся к TFS");
+                sendStat("Подключаемся к TFS");
                 tfsbl.VersionControl(tdlink.ServerUri);
 
-                SendStat("Проверка несохраненных данных в шельве");
+                sendStat("Проверка несохраненных данных в шельве");
                 if (!tfsbl.ExistsShelveset())
                     return;
 
-                SendStat("Удаление шельвы в TFS");
+                sendStat("Удаление шельвы в TFS");
                 tfsbl.DeleteShelveset();
             }
         }
-
-
 
         /// <summary>
         /// Накатить скрипт
@@ -91,7 +88,6 @@ namespace Arcas.BL
 
                 if (sqlScript.IsNullOrWhiteSpace())
                     return "Тело скрипта пустое";
-
 
                 if (checkSqlScriptOnUSE(sqlScript))
                     return "В скрипте используется USE БД.";
@@ -126,10 +122,10 @@ namespace Arcas.BL
                     // Проверяем переданные соединения с TFS и БД                    
 
                     // Проверяем настройки TFS
-                    SendStat("Подключаемся к TFS");
+                    sendStat("Подключаемся к TFS");
                     tfsbl.VersionControl(tdlink.ServerUri);
 
-                    SendStat("Получение настроек поднятия версии.");
+                    sendStat("Получение настроек поднятия версии.");
                     var tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
                     tfsbl.DownloadFile(tdlink.ServerPathToSettings, tempfile);
 
@@ -150,7 +146,7 @@ namespace Arcas.BL
                         return "Получение файла настроек неуспешно";
                     }
 
-                    SendStat("Получение типа соединения");
+                    sendStat("Получение типа соединения");
 
                     Type conn = typeof(SqlConnection);
                     useSqlConnection = true;
@@ -190,7 +186,6 @@ namespace Arcas.BL
 
                                 AppDomain.CurrentDomain.Load(linkedAs);
                             }
-
                         }
 
                         conn = conAss.ExportedTypes.FirstOrDefault(x => x.FullName == upsets.TypeConnectionFullName);
@@ -200,55 +195,54 @@ namespace Arcas.BL
                         useSqlConnection = false;
                     }
 
-                    SendStat("Проверка несохраненных данных в шельве");
+                    sendStat("Проверка несохраненных данных в шельве");
                     if (tfsbl.ExistsShelveset())
                         return $"В шельве присутствуют несохраненные изменения";
 
-                    SendStat("Подключаемся к БД");
+                    sendStat("Подключаемся к БД");
                     DomainContext.InitConnection(conn, upsets.ConnectionStringModelDb);
-
 
                     tfsbl.MapTempWorkspace(upsets.ServerPathScripts);
 
                     // TODO  Проверить скрип на корректность 
                     // В частности, отсутствие USE. Ещеб как нить замутить просто проверку, а не выполнение
 
-                    SendStat("Обработка файла версионности");
+                    sendStat("Обработка файла версионности");
 
-                    String VerFileName = "_lastVer.xml";
-                    String PathVerFile = Path.Combine(tfsbl.Tempdir, VerFileName);
+                    String verFileName = "_lastVer.xml";
+                    String pathVerFile = Path.Combine(tfsbl.Tempdir, verFileName);
 
-                    if (tfsbl.GetLastFile(VerFileName) == 0)
+                    if (tfsbl.GetLastFile(verFileName) == 0)
                     {
                         //файла нет
-                        if (!File.Exists(PathVerFile))
+                        if (!File.Exists(pathVerFile))
                         {
                             // сохраняем новую чистую версию ДБ
-                            (new VerDB()).XMLSerialize(PathVerFile);
-                            tfsbl.AddFile(PathVerFile);
+                            new VerDB().XMLSerialize(pathVerFile);
+                            tfsbl.AddFile(pathVerFile);
                             tfsbl.CheckIn("Добавлен файл версионности", linkedTask);
                         }
                     }
 
-                    if (!tfsbl.LockFile(VerFileName))
+                    if (!tfsbl.LockFile(verFileName))
                         return "Производится накатка. Повторите позже";
 
-                    if (!tfsbl.CheckOut(PathVerFile))
+                    if (!tfsbl.CheckOut(pathVerFile))
                         return "Извлечение файла текущей версии неуспешно. Повторите позже";
 
-                    var CurVerDB = PathVerFile.XMLDeserializeFromFile<VerDB>() ?? new VerDB();
+                    var curVerDB = pathVerFile.XMLDeserializeFromFile<VerDB>() ?? new VerDB();
 
-                    CurVerDB.VersionBD += 1;
-                    CurVerDB.DateVersion = new DateTimeOffset(DateTime.Now).DateTime;
+                    curVerDB.VersionBD += 1;
+                    curVerDB.DateVersion = new DateTimeOffset(DateTime.Now).DateTime;
 
                     List<String> scts = new List<string>();
 
                     if (useSqlConnection)
-                        scts.AddRange(SplitSqlTExtOnGO(sqlScript));
+                        scts.AddRange(splitSqlTExtOnGO(sqlScript));
                     else
                         scts.Add(sqlScript);
 
-                    SendStat("Накатка скрипта на БД");
+                    sendStat("Накатка скрипта на БД");
 
                     DbTransactionScope tran = null;
 
@@ -262,13 +256,13 @@ namespace Arcas.BL
                         foreach (var sct in scts)
                             adapter.ExecScript(sct);
 
-                        adapter.ExecScript(String.Format(upsets.ScriptUpdateVer, CurVerDB));
+                        adapter.ExecScript(String.Format(upsets.ScriptUpdateVer, curVerDB));
 
                         #endregion
 
                         #region формируем файл и чекиним 
 
-                        SendStat("Генерация файла скрипта");
+                        sendStat("Генерация файла скрипта");
 
                         var sb = new StringBuilder();
 
@@ -286,18 +280,18 @@ namespace Arcas.BL
                             sb.AppendLine(script);
                         }
 
-                        sb.AppendLine(String.Format(upsets.ScriptUpdateVer, CurVerDB));
+                        sb.AppendLine(String.Format(upsets.ScriptUpdateVer, curVerDB));
 
                         if (inTaransaction)
                             sb.Append(upsets.ScriptPartAfterBodyWithTran);
 
-                        String FileNameNewVer = Path.Combine(tfsbl.Tempdir, CurVerDB + ".sql");
+                        String fileNameNewVer = Path.Combine(tfsbl.Tempdir, curVerDB + ".sql");
 
-                        File.WriteAllText(FileNameNewVer, sb.ToString());
-                        CurVerDB.XMLSerialize(PathVerFile);
-                        tfsbl.AddFile(FileNameNewVer);
+                        File.WriteAllText(fileNameNewVer, sb.ToString());
+                        curVerDB.XMLSerialize(pathVerFile);
+                        tfsbl.AddFile(fileNameNewVer);
 
-                        SendStat("Кладем в шельву в TFS");
+                        sendStat("Кладем в шельву в TFS");
 
                         tfsbl.CreateShelveset(comment, linkedTask);
 
@@ -308,13 +302,13 @@ namespace Arcas.BL
                             tran = null;
                         }
 
-                        SendStat("Чекин в TFS");
+                        sendStat("Чекин в TFS");
                         tfsbl.CheckIn(comment, linkedTask);
 
-                        SendStat("Удаление шельвы в TFS");
+                        sendStat("Удаление шельвы в TFS");
                         tfsbl.DeleteShelveset();
 
-                        SendStat("Готово");
+                        sendStat("Готово");
 
                         #endregion
 
@@ -344,40 +338,40 @@ namespace Arcas.BL
         /// <summary>
         /// Проверка на наличие в скрипте USE
         /// </summary>
-        /// <param name="SqlText">SQL скрипт</param>
+        /// <param name="sqlText">SQL скрипт</param>
         /// <returns>true - USE в скрипте</returns>
-        private Boolean checkSqlScriptOnUSE(String SqlText)
+        private Boolean checkSqlScriptOnUSE(String sqlText)
         {
             // убираем строчные комментарии
             Regex regex = new Regex("--.*", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            SqlText = regex.Replace(SqlText, Environment.NewLine);
+            sqlText = regex.Replace(sqlText, Environment.NewLine);
 
             // убираем многострочные коммантарии
             regex = new Regex(@"/\*.*?(\*/)+", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            SqlText = regex.Replace(SqlText, "");
+            sqlText = regex.Replace(sqlText, "");
 
             // убираем [*use*](имена таблиц или полей. заключены в квадратные скобки)
             regex = new Regex(@"\[[^\[]*use[^\[\]]*]", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            SqlText = regex.Replace(SqlText, "");
+            sqlText = regex.Replace(sqlText, "");
 
             // ищем use БД
             regex = new Regex(@"([^\S]|^)use\b", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            return regex.Match(SqlText).Success;
+            return regex.Match(sqlText).Success;
         }
 
         /// <summary>
         /// Разбиение скрипта по GO
         /// </summary>
-        /// <param name="SqlText"></param>
+        /// <param name="sqlText"></param>
         /// <returns></returns>
-        private List<String> SplitSqlTExtOnGO(String SqlText)
+        private List<String> splitSqlTExtOnGO(String sqlText)
         {
             string separator = @"!@#$%^&*()";
             // убираем строчные комментарии
             Regex regex = new Regex(@"(\n|\r|\n\r|^)\s*GO\s*(\n\r|\n|\r|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-            SqlText = regex.Replace(SqlText, separator);
+            sqlText = regex.Replace(sqlText, separator);
 
-            var res = new List<String>(SqlText.Split(new string[] { separator }, StringSplitOptions.None));
+            var res = new List<String>(sqlText.Split(new string[] { separator }, StringSplitOptions.None));
 
             res.RemoveAll(new Predicate<string>((a) => { return a == String.Empty; }));
 
@@ -387,10 +381,10 @@ namespace Arcas.BL
         private class Adapter : DataAccesBase
         {
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Проверка запросов SQL на уязвимости безопасности")]
-            public void ExecScript(String SqlText)
+            public void ExecScript(String sqlText)
             {
                 var cmd = this.CreateCommandObject();
-                cmd.CommandText = SqlText;
+                cmd.CommandText = sqlText;
                 cmd.CommandTimeout = (int)TimeSpan.FromMinutes(5).TotalSeconds;
                 ExecuteNonQuery(cmd);
             }

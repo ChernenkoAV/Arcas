@@ -42,14 +42,14 @@ namespace Arcas.Settings
             WrapTfs wrapTfs = new WrapTfs();
             nl.ServerUri = wrapTfs.ShowTeamProjectPicker(this);
 
-            SelFileOnServer(nl);
+            selFileOnServer(nl);
 
             link.Add(nl);
 
             dgvTFSDB.Update();
         }
 
-        private void SelFileOnServer(TfsDbLink link)
+        private void selFileOnServer(TfsDbLink link)
         {
             if (link.ServerUri != null)
             {
@@ -122,6 +122,7 @@ namespace Arcas.Settings
                     MessageBox.Show(this, "Не указано наименование связки");
                     return;
                 }
+
                 tdbli.Name = nn;
             }
 
@@ -143,11 +144,11 @@ namespace Arcas.Settings
                     return;
                 }
 
-                SelFileOnServer(tdbli);
+                selFileOnServer(tdbli);
             }
         }
 
-        private void TFSDBLinkForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void tFSDBLinkForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (this.DialogResult != DialogResult.OK)
                 return;
@@ -156,7 +157,7 @@ namespace Arcas.Settings
             Config.Instance.Save();
         }
 
-        private void TFSDBLinkForm_KeyDown(object sender, KeyEventArgs e)
+        private void tFSDBLinkForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (!(e.Alt && e.Control))
                 return;

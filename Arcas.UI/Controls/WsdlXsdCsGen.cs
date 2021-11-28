@@ -12,10 +12,9 @@ namespace Arcas.Controls
             CsGenFromWsdlXsd csGenFromWsdlXsd)
         {
             InitializeComponent();
-            this.Text = "Генерация C# из WSDL и XSD";
+            Text = "Генерация C# из WSDL и XSD";
 
             this.csGenFromWsdlXsd = csGenFromWsdlXsd;
-
 
             tbWsdlUri.Text = Config.Instance.WsdlXsdGenSetting.Wsdl_PathToWsdl;
             tbSaveWsdlTo.Text = Config.Instance.WsdlXsdGenSetting.Wsdl_PathToSaveFile;
@@ -58,7 +57,7 @@ namespace Arcas.Controls
             tbSaveWsdlTo.Text = pathfile;
         }
 
-        private WsdlXsdGenSettingT CreateSetting()
+        private WsdlXsdGenSettingT createSetting()
         {
             return new WsdlXsdGenSettingT()
             {
@@ -77,7 +76,7 @@ namespace Arcas.Controls
             try
             {
 
-                Config.Instance.WsdlXsdGenSetting = CreateSetting();
+                Config.Instance.WsdlXsdGenSetting = createSetting();
                 Config.Instance.Save();
 
                 var msg = csGenFromWsdlXsd.GenFromWsdl(
@@ -106,7 +105,7 @@ namespace Arcas.Controls
             try
             {
 
-                Config.Instance.WsdlXsdGenSetting = CreateSetting();
+                Config.Instance.WsdlXsdGenSetting = createSetting();
                 Config.Instance.Save();
 
                 var msg = csGenFromWsdlXsd.GenFromXsd(

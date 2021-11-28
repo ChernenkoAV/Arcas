@@ -17,7 +17,7 @@ using WebDescription = System.Web.Services.Description;
 
 namespace Arcas.BL
 {
-    class prepareData
+    internal class prepareData
     {
         public string MainTempFile { get; set; }
         public IEnumerable<String> Imperts { get; set; }
@@ -39,7 +39,6 @@ namespace Arcas.BL
 
             if (!msg.IsNullOrWhiteSpace())
                 return msg;
-
 
             MetadataSet mdSet = new MetadataSet();
             mdSet.MetadataSections.Add(MetadataSection.CreateFromServiceDescription(WebDescription.ServiceDescription.Read(pd.MainTempFile)));
@@ -135,23 +134,19 @@ namespace Arcas.BL
 
             var sourseUri = new Uri(uri);
 
-
             if (!sourseUri.IsFile)
             {
                 if (outputFile.IsNullOrWhiteSpace())
                     return "Не указан выходной файл";
 
-                HttpDownloadFile(uri, mainTempFile);
+                httpDownloadFile(uri, mainTempFile);
             }
             else
                 File.Copy(uri, mainTempFile);
 
-
-            String sourseDir = null;
-
             if (outputFile.IsNullOrWhiteSpace())
             {
-                sourseDir = Path.GetDirectoryName(uri);
+                var sourseDir = Path.GetDirectoryName(uri);
                 outputFile = Path.Combine(sourseDir, Path.GetFileNameWithoutExtension(uri) + ".cs");
                 try
                 {
@@ -210,10 +205,7 @@ namespace Arcas.BL
             XNamespace xsdNS = "http://www.w3.org/2001/XMLSchema";
             XNamespace wsdlNS = "http://schemas.xmlsoap.org/wsdl/";
             XDocument xdocfile = XDocument.Load(filePath);
-            String sourceForTargetImport = null;
-
-            string importName = null;
-            string fileinTemp = null;
+            string sourceForTargetImport = null;
 
             Action<XAttribute, string> lartImp = (locationAttrib, fileintemp) =>
             {
@@ -254,21 +246,21 @@ namespace Arcas.BL
 
                         //Бывает прямой ссылкой
                         ub.Path = Path.Combine(Path.GetDirectoryName(ub.Path), locationAttrib.Value);
-                        HttpDownloadFile(ub.Uri.AbsoluteUri, fileintemp);
+                        httpDownloadFile(ub.Uri.AbsoluteUri, fileintemp);
                     }
                     catch
                     {
                         // Бывает в Query
                         UriBuilder ub = new UriBuilder(sourseUri);
                         ub.Query = locationAttrib.Value;
-                        HttpDownloadFile(ub.Uri.PathAndQuery, fileintemp);
+                        httpDownloadFile(ub.Uri.PathAndQuery, fileintemp);
                     }
                 }
 
                 // если в локации ссылка, то читаем по ней.
                 if (!importIsFile)
                 {
-                    HttpDownloadFile(locationAttrib.Value, fileintemp);
+                    httpDownloadFile(locationAttrib.Value, fileintemp);
                     sourceForTargetImport = null;
                 }
 
@@ -276,6 +268,9 @@ namespace Arcas.BL
                     res.Add(item);
             };
 
+            string fileinTemp;
+
+            string importName;
             foreach (var item in xdocfile.Descendants(xsdNS + "import"))
             {
                 var locationAttrib = item.Attribute("schemaLocation");
@@ -323,7 +318,7 @@ namespace Arcas.BL
             return res;
         }
 
-        private void HttpDownloadFile(string uri, string file)
+        private void httpDownloadFile(string uri, string file)
         {
             using (var wc = new WebClient())
                 wc.DownloadFile(uri, file);

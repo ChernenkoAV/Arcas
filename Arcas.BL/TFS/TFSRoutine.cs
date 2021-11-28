@@ -24,8 +24,7 @@ namespace Arcas.BL.TFS
 
         private WrapTfs wrapTfs = new WrapTfs();
 
-        private VersionControlServer vcs = null;
-
+        private VersionControlServer vcs;
 
         private const string arcasWorkspaceName = "Arcas Workspace";
         private const string arcasShelveName = "Arcas Roll DB";
@@ -39,16 +38,10 @@ namespace Arcas.BL.TFS
             vcs = wrapTfs.VersionControlServerGet(serverTfs);
         }
 
+        public String Tempdir { get; } = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
 
-        public String Tempdir
-        {
-            get { return tempdir; }
-        }
-
-        private String tempdir = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
-
-        private Workspace tempWorkspace = null;
-        private String serverPath = null;
+        private Workspace tempWorkspace;
+        private String serverPath;
 
         // Создаем временную рабочую область
         private Workspace getTempWorkspace()
@@ -67,8 +60,8 @@ namespace Arcas.BL.TFS
         /// <summary>
         /// Связывание пути на сервере TFS с временной папкой во временной рабочей области
         /// </summary>
-        /// <param name="ServerPath"></param>
-        public void MapTempWorkspace(String ServerPath)
+        /// <param name="serverPath"></param>
+        public void MapTempWorkspace(String serverPath)
         {
             try
             {
@@ -79,18 +72,18 @@ namespace Arcas.BL.TFS
                     // Если в процесе ремапят, то надо удалить предыдущюю раб.обл.
                     if (mfdr != null &&
                     mfdr.LocalItem != Tempdir &&
-                    mfdr.ServerItem != ServerPath)
+                    mfdr.ServerItem != serverPath)
 
                     {
                         wrapTfs.WorkspaceUndo(tempWorkspace);
                         wrapTfs.WorkspaceDelete(tempWorkspace);
                         tempWorkspace = null;
                     }
-
                 }
-                serverPath = ServerPath;
+
+                this.serverPath = serverPath;
                 // Для этого рабочего пространства папка на сервере сопоставляется с локальной папкой 
-                wrapTfs.WorkspaceMap(getTempWorkspace(), serverPath, Tempdir);
+                wrapTfs.WorkspaceMap(getTempWorkspace(), this.serverPath, Tempdir);
             }
             catch
             {
@@ -100,6 +93,7 @@ namespace Arcas.BL.TFS
                     wrapTfs.WorkspaceDelete(tempWorkspace);
                     tempWorkspace = null;
                 }
+
                 throw;
             }
         }
@@ -112,51 +106,51 @@ namespace Arcas.BL.TFS
         /// <summary>
         /// Получение последней версии файлав в временной рабочей области
         /// </summary>
-        /// <param name="FileName"></param>
+        /// <param name="fileName"></param>
         /// <returns>Кол-во новых файлов</returns>
-        public long GetLastFile(String FileName)
+        public long GetLastFile(String fileName)
         {
-            return wrapTfs.WorkspaceGetLastItem(getTempWorkspace(), serverPath + "/" + FileName);
+            return wrapTfs.WorkspaceGetLastItem(getTempWorkspace(), serverPath + "/" + fileName);
         }
 
         /// <summary>
         /// Добавить файл в рабочую область
         /// </summary>
-        /// <param name="PathFileName">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
-        public void AddFile(string PathFileName)
+        /// <param name="pathFileName">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
+        public void AddFile(string pathFileName)
         {
-            wrapTfs.WorkspaceAddFile(getTempWorkspace(), PathFileName);
+            wrapTfs.WorkspaceAddFile(getTempWorkspace(), pathFileName);
         }
 
         /// <summary>
         /// Возврат изменений в рабочей области
         /// </summary>
-        /// <param name="CommentOnCheckIn">Комментарий для изменения</param>
-        /// <param name="NumberTasks">Номера задач для чекина</param>
-        public void CheckIn(string CommentOnCheckIn, List<int> NumberTasks = null)
+        /// <param name="commentOnCheckIn">Комментарий для изменения</param>
+        /// <param name="numberTasks">Номера задач для чекина</param>
+        public void CheckIn(string commentOnCheckIn, List<int> numberTasks = null)
         {
-            wrapTfs.WorkspaceCheckIn(getTempWorkspace(), CommentOnCheckIn, NumberTasks);
+            wrapTfs.WorkspaceCheckIn(getTempWorkspace(), commentOnCheckIn, numberTasks);
         }
 
         /// <summary>
         /// Блокировка файла. Псевдо транзанкция
         /// </summary>
-        /// <param name="FileName">Имя файла(можно с путем. на сервере)</param>
+        /// <param name="fileName">Имя файла(можно с путем. на сервере)</param>
         /// <param name="Block"></param>
         /// <returns>true - успешно, false - неуспешно</returns>
-        public bool LockFile(string FileName)
+        public bool LockFile(string fileName)
         {
-            return wrapTfs.WorkspaceLockFile(getTempWorkspace(), serverPath + "/" + FileName, LockLevel.CheckOut);
+            return wrapTfs.WorkspaceLockFile(getTempWorkspace(), serverPath + "/" + fileName, LockLevel.CheckOut);
         }
 
         /// <summary>
         /// Извлечение файла для редактирования
         /// </summary>
-        /// <param name="PathFileName">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
+        /// <param name="pathFileName">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
         /// <returns>true - успешно, false - неуспешно</returns>
-        public bool CheckOut(string PathFileName)
+        public bool CheckOut(string pathFileName)
         {
-            return wrapTfs.WorkspaceCheckOut(getTempWorkspace(), PathFileName);
+            return wrapTfs.WorkspaceCheckOut(getTempWorkspace(), pathFileName);
         }
 
         public bool ExistsShelveset()

@@ -9,7 +9,6 @@ using Arcas.Settings;
 using Cav;
 using Cav.Tfs;
 
-
 namespace Arcas.Controls
 {
     public partial class UpdaterDB : TabControlBase
@@ -49,7 +48,6 @@ namespace Arcas.Controls
                     msg = ex.InnerException.Message;
             }
 
-
             if (msg.IsNullOrWhiteSpace())
                 msg = savbl.SaveScript(
                     (TfsDbLink)cbxTfsDbLinc.SelectedItem,
@@ -69,17 +67,17 @@ namespace Arcas.Controls
             Cursor.Current = Cursors.Default;
         }
 
-        private void savbl_StatusMessages(string Message)
+        private void savbl_StatusMessages(string message)
         {
-            this.SetSateProgress(Message);
+            this.SetSateProgress(message);
         }
 
         public override void RefreshTab()
         {
-            var SelName = Config.Instance.SelestedTFSDB;
+            var selName = Config.Instance.SelestedTFSDB;
             cbxTfsDbLinc.DataSource = Config.Instance.TfsDbSets;
             if (cbxTfsDbLinc.DataSource != null)
-                cbxTfsDbLinc.SelectedItem = ((List<TfsDbLink>)cbxTfsDbLinc.DataSource).FirstOrDefault(x => x.Name == SelName);
+                cbxTfsDbLinc.SelectedItem = ((List<TfsDbLink>)cbxTfsDbLinc.DataSource).FirstOrDefault(x => x.Name == selName);
             if (cbxTfsDbLinc.SelectedItem == null && cbxTfsDbLinc.Items.Count > 0)
                 cbxTfsDbLinc.SelectedIndex = 0;
 
@@ -124,7 +122,6 @@ namespace Arcas.Controls
                             recNod(cqin, tnod);
                             tn.Nodes.Add(tnod);
                         }
-
                     });
 
                 foreach (var qin in qs)
@@ -179,9 +176,7 @@ namespace Arcas.Controls
                     exMsg = ex.InnerException.Message;
                 Dialogs.ErrorF(this, exMsg);
             }
-
         }
-
         class Lwi
         {
             public Lwi(WorkItem wi)
@@ -195,7 +190,6 @@ namespace Arcas.Controls
             {
                 return $"({ID}) {Title}";
             }
-
         }
 
         private void btAddWorkItem_Click(object sender, EventArgs e)
@@ -277,7 +271,7 @@ namespace Arcas.Controls
 
         private void btTfsDbLinkSettings_Click(object sender, EventArgs e)
         {
-            (new TFSDBLinkForm()).ShowDialog(this);
+            new TFSDBLinkForm().ShowDialog(this);
             this.RefreshTab();
         }
 
@@ -373,7 +367,7 @@ namespace Arcas.Controls
                 if (!File.Exists(filePath))
                     return;
 
-                if ((new FileInfo(filePath).Length > (1024 * 1024)))
+                if (new FileInfo(filePath).Length > (1024 * 1024))
                 {
                     Dialogs.ErrorF(this, "Файлы более 1 мегабайта нельзя обрабатывать");
                     return;
@@ -387,7 +381,7 @@ namespace Arcas.Controls
 
                 rtbScriptBody.Text = binstr;
                 posCurscript = posCurscript + binstr.Length;
-                SetPosCur();
+                setPosCur();
             }
             catch (Exception ex)
             {
@@ -405,13 +399,13 @@ namespace Arcas.Controls
             var clipText = Clipboard.GetText();
             rtbScriptBody.Text = rtbScriptBody.Text.Insert(rtbScriptBody.SelectionStart, clipText);
             posCurscript = posCurscript + clipText.Length;
-            SetPosCur();
+            setPosCur();
         }
 
         private void tsmiDeleteText_Click(object sender, EventArgs e)
         {
             rtbScriptBody.Text = rtbScriptBody.Text.Remove(rtbScriptBody.SelectionStart, rtbScriptBody.SelectionLength);
-            SetPosCur();
+            setPosCur();
         }
 
         private void tsmiTextSelectCute_Click(object sender, EventArgs e)
@@ -420,7 +414,7 @@ namespace Arcas.Controls
             tsmiDeleteText_Click(null, null);
         }
 
-        private void SetPosCur()
+        private void setPosCur()
         {
             rtbScriptBody.SelectionLength = 0;
             rtbScriptBody.SelectionStart = posCurscript;
@@ -439,8 +433,6 @@ namespace Arcas.Controls
 
             if (e.KeyCode == Keys.Enter)
                 btAddInIDTask_Click(null, null);
-
-
         }
     }
 }

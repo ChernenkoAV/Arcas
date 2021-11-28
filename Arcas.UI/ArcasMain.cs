@@ -51,23 +51,26 @@ namespace Arcas
 
                     Dialogs.ErrorF(this, msg);
                 }
-
         }
 
-        void savbl_StatusMessages(string Message)
+        void savbl_StatusMessages(string message)
         {
-            tsProgressMessage.Text = Message;
+            tsProgressMessage.Text = message;
             this.Refresh();
         }
 
-        private void ArcasMainMindow_FormClosing(object sender, FormClosingEventArgs e)
+        private void arcasMainMindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             Config.Instance.Save();
 
-            try { Utils.DeleteDirectory(DomainContext.TempPath); } catch { }
+            try
+            {
+                Utils.DeleteDirectory(DomainContext.TempPath);
+            }
+            catch { }
         }
 
-        private void ArcasMain_Load(object sender, EventArgs e)
+        private void arcasMain_Load(object sender, EventArgs e)
         {
             tabPageDBVer_Enter(null, null);
         }

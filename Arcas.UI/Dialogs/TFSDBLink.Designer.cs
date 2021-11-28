@@ -122,8 +122,8 @@
             this.Name = "TFSDBLinkForm";
             this.ShowIcon = false;
             this.Text = "Связка TFS-DB";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TFSDBLinkForm_FormClosed);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TFSDBLinkForm_KeyDown);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.tFSDBLinkForm_FormClosed);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tFSDBLinkForm_KeyDown);
             this.Controls.SetChildIndex(this.btDelete, 0);
             this.Controls.SetChildIndex(this.btAdd, 0);
             this.Controls.SetChildIndex(this.dgvTFSDB, 0);

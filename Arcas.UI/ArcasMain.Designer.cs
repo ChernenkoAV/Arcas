@@ -119,8 +119,8 @@
             this.Name = "ArcasMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Аркас";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ArcasMainMindow_FormClosing);
-            this.Load += new System.EventHandler(this.ArcasMain_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.arcasMainMindow_FormClosing);
+            this.Load += new System.EventHandler(this.arcasMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);

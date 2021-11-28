@@ -46,7 +46,6 @@ namespace Arcas.Settings
         }
     }
 
-
     public class TfsDbLink
     {
         public String Name { get; set; }
@@ -54,7 +53,6 @@ namespace Arcas.Settings
         public String ServerPathToSettings { get; set; }
         public FormatBinaryData FormatBinary { get; set; }
     }
-
 
     /// <summary>
     /// Форматировние бинарных данных
@@ -69,7 +67,6 @@ namespace Arcas.Settings
         /// Форматирование байта
         /// </summary>
         public String FormatByte { get; set; }
-
     }
 
     public class UpdateDbSetting
@@ -118,6 +115,5 @@ namespace Arcas.Settings
         /// Настройки для форматировния бинарных данных для вставки в текст скрипта
         /// </summary>
         public FormatBinaryData FormatBinary { get; set; }
-
     }
 }
