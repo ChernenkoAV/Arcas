@@ -32,11 +32,9 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>https://clickonceget.azurewebsites.net/app/Arcas/</InstallUrl>
     <UpdateUrl>https://clickonceget.azurewebsites.net/app/Arcas/</UpdateUrl>
-    <TargetCulture>ru-RU</TargetCulture>
     <ProductName>Аркас</ProductName>
     <PublisherName>ChernenkoAV</PublisherName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <TrustUrlParameters>true</TrustUrlParameters>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
@@ -62,13 +60,9 @@
     <SignManifests>true</SignManifests>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>true</GenerateManifests>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
     <ManifestCertificateThumbprint>339DB9C4E7C1C98C48B38ACE620700BE8989F774</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Arcas.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -77,9 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="gear_wheel.ico" />
-    <Content Include="Microsoft.WITDataStore64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Launcher.cs" />
@@ -96,9 +87,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 и x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 и x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
