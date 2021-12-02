@@ -7,7 +7,6 @@ using Arcas.BL;
 using Arcas.BL.TFS;
 using Arcas.Settings;
 using Cav;
-using Cav.Tfs;
 
 namespace Arcas.Controls
 {
@@ -104,8 +103,7 @@ namespace Arcas.Controls
                     return;
                 }
 
-                var tfs = new WrapTfs();
-                var qs = tfs.QueryItemsGet(curset.ServerUri, curset.ServerPathToSettings);
+                var qs = TfsRoutineBL.QueryItemsGet(curset.ServerUri, curset.ServerPathToSettings);
 
                 Action<QueryItemNode, TreeNode> recNod = null;
                 recNod = new Action<QueryItemNode, TreeNode>((qn, tn) =>
@@ -164,10 +162,9 @@ namespace Arcas.Controls
                 if (qin.IsFolder)
                     return;
 
-                var tfs = new WrapTfs();
-                var wims = tfs.WorkItemsFromQueryGet(curset.ServerUri, qin);
+                var wims = TfsRoutineBL.WorkItemsFromQueryGet(curset.ServerUri, qin);
                 foreach (var wi in wims)
-                    lbWorkItems.Items.Add(new Lwi(wi));
+                    lbWorkItems.Items.Add(new Lwi() { ID = wi.Key, Title = wi.Value });
             }
             catch (Exception ex)
             {
@@ -179,11 +176,6 @@ namespace Arcas.Controls
         }
         class Lwi
         {
-            public Lwi(WorkItem wi)
-            {
-                ID = wi.ID;
-                Title = wi.Title;
-            }
             public int ID { get; set; }
             public String Title { get; set; }
             public override string ToString()
@@ -219,6 +211,9 @@ namespace Arcas.Controls
                 if (!int.TryParse(tbIdTask.Text, out idTask))
                     return;
 
+                if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == idTask))
+                    return;
+
                 TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
                 if (curset == null)
                     return;
@@ -229,11 +224,11 @@ namespace Arcas.Controls
                     return;
                 }
 
-                var tfs = new WrapTfs();
-                var wi = tfs.WorkItemByIdGet(curset.ServerUri, idTask);
-                if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == wi.ID))
+                var title = TfsRoutineBL.TitleWorkItemByIdGet(curset.ServerUri, idTask);
+                if (title.IsNullOrWhiteSpace())
                     return;
-                lbLinkedWirkItem.Items.Add(new Lwi(wi));
+
+                lbLinkedWirkItem.Items.Add(new Lwi() { ID = idTask, Title = title });
 
                 tbIdTask.Text = null;
             }
@@ -296,9 +291,8 @@ namespace Arcas.Controls
                     {
                         // Проверяем доступность TFS
                         // подгружаем настройку бинарныго формата
-                        using (var tfsbl = new TFSRoutineBL())
+                        using (var tfsbl = new TfsRoutineBL(curset.ServerUri))
                         {
-                            tfsbl.VersionControl(curset.ServerUri);
                             tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
                             tfsbl.DownloadFile(curset.ServerPathToSettings, tempfile);
                             var upsets = File.ReadAllBytes(tempfile).DeserializeAesDecrypt<UpdateDbSetting>(curset.ServerPathToSettings);

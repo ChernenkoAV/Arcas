@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Windows.Forms;
 using Arcas.BL.TFS;
 using Cav;
-using Cav.Tfs;
 using Cav.WinForms.BaseClases;
 
 namespace Arcas.Settings
@@ -73,7 +72,6 @@ namespace Arcas.Settings
         public TFSDBList ItemsInSets { get; set; }
 
         private ErrorTracker errorTracker = null;
-        private WrapTfs wrapTfs = new WrapTfs();
         private TfsDbLink editLink = null;
 
         private UpdateDbSetting dbSettingGet(DbTypeItem dbItem)
@@ -127,7 +125,6 @@ namespace Arcas.Settings
 
                 if (conn == null)
                 {
-
                     conAss = AppDomain.CurrentDomain.Load(upsets.AssemplyWithImplementDbConnection);
 
                     foreach (var la in upsets.LinkedAssemblyDbConnection ?? new List<byte[]>())
@@ -189,10 +186,8 @@ namespace Arcas.Settings
             try
             {
                 UpdateDbSetting upsets = null;
-                using (TFSRoutineBL tfsbl = new TFSRoutineBL())
+                using (TfsRoutineBL tfsbl = new TfsRoutineBL(editLink.ServerUri))
                 {
-                    tfsbl.VersionControl(editLink.ServerUri);
-
                     tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
                     tfsbl.DownloadFile(editLink.ServerPathToSettings, tempfile);
                 }
@@ -321,8 +316,7 @@ namespace Arcas.Settings
 
         private void btPathFoldertoFileSet_Click(object sender, EventArgs e)
         {
-            var vc = wrapTfs.VersionControlServerGet(new Uri(tbTfsProject.Text));
-            var folder = wrapTfs.ShowDialogChooseServerFolder(this, vc, null);
+            var folder = TfsRoutineBL.ShowDialogChooseServerFolder(this, new Uri(tbTfsProject.Text));
             tbSetFileServerFolder.Text = folder;
             tbSetFileServerFolder_Validating(null, null);
         }
@@ -409,11 +403,9 @@ namespace Arcas.Settings
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var vc = wrapTfs.VersionControlServerGet(new Uri(tbTfsProject.Text));
-            var folder = wrapTfs.ShowDialogChooseServerFolder(this, vc, null);
+            var folder = TfsRoutineBL.ShowDialogChooseServerFolder(this, new Uri(tbTfsProject.Text));
             tbFolderForScripts.Text = folder;
             tbFolderForScripts_Validating(null, null);
-
         }
 
         private void btChekConnection_Click(object sender, EventArgs e)
@@ -476,11 +468,10 @@ namespace Arcas.Settings
 
             try
             {
-                using (var tfsbl = new TFSRoutineBL())
+                using (var tfsbl = new TfsRoutineBL(newLink.ServerUri))
                 {
                     var localFileSetPath = Path.Combine(tfsbl.Tempdir, fileNameSet);
 
-                    tfsbl.VersionControl(new Uri(tbTfsProject.Text));
                     tfsbl.MapTempWorkspace(tbSetFileServerFolder.Text);
 
                     tfsbl.GetLastFile(fileNameSet);

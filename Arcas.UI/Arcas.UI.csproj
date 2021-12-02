@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Arcas.UI</RootNamespace>
     <AssemblyName>Arcas.UI</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -42,9 +42,6 @@
   <ItemGroup>
     <Reference Include="Cav.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Cav.Core.7.3.6\lib\net461\Cav.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Cav.Tfs, Version=4.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Cav.Tfs.4.0.3\lib\net461\Cav.Tfs.dll</HintPath>
     </Reference>
     <Reference Include="Cav.WinForms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Cav.WinForms.4.0.1\lib\net461\Cav.WinForms.dll</HintPath>
@@ -109,9 +106,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="cav.snk" />
     <None Include="packages.config" />
   </ItemGroup>

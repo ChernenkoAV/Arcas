@@ -5,7 +5,9 @@ using Cav.Configuration;
 
 namespace Arcas
 {
+#pragma warning disable CS0618 // Тип или член устарел
     public class Config : ProgramSettingsBase<Config>
+#pragma warning restore CS0618 // Тип или член устарел
     {
         /// <summary>
         /// Последняя использованная конфигурация при накатке БД

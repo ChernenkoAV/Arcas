@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Arcas.BL.TFS;
 using Cav;
-using Cav.Tfs;
 using Cav.WinForms.BaseClases;
 
 namespace Arcas.Settings
@@ -39,8 +38,7 @@ namespace Arcas.Settings
 
             } while (link.Any(x => x.Name == nl.Name));
 
-            WrapTfs wrapTfs = new WrapTfs();
-            nl.ServerUri = wrapTfs.ShowTeamProjectPicker(this);
+            nl.ServerUri = TfsRoutineBL.ShowTeamProjectPicker(this);
 
             selFileOnServer(nl);
 
@@ -51,44 +49,22 @@ namespace Arcas.Settings
 
         private void selFileOnServer(TfsDbLink link)
         {
-            if (link.ServerUri != null)
+            if (link.ServerUri == null)
+                return;
+
+            string selPath;
+            try
             {
-                WrapTfs wrapTfs = new WrapTfs();
-                var vc = wrapTfs.VersionControlServerGet(link.ServerUri);
-
-                var selItem = wrapTfs.ShowDialogChooseItem(this, vc);
-
-                if (selItem == null)
-                    return;
-
-                if (selItem.ItemType != ItemType.File)
-                {
-                    Dialogs.ErrorF(this, "Необходимо выбрать файл настроек");
-                    return;
-                }
-
-                var tempFile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
-
-                wrapTfs.VersionControlServerDownloadFile(vc, selItem.Path, tempFile);
-
-                UpdateDbSetting sets = null;
-                String msg = "Файл настроек не расшифрован. Либо выбран не файл настроек, либо еще чо. Exception: {0}";
-                try
-                {
-                    sets = File.ReadAllBytes(tempFile).DeserializeAesDecrypt<UpdateDbSetting>(selItem.Path);
-                }
-                catch (Exception ex)
-                {
-                    msg = String.Format(msg, ex.Expand());
-                }
-
-                if (sets == null || sets.ServerPathScripts.IsNullOrWhiteSpace())
-                {
-                    Dialogs.InformationF(this, msg);
-                }
-                else
-                    link.ServerPathToSettings = selItem.Path;
+                selPath = TfsRoutineBL.SelectServerPathSetting(this, link.ServerUri);
             }
+            catch (Exception ex)
+            {
+                Dialogs.InformationF(this, ex.Message);
+                return;
+            }
+
+            if (!selPath.IsNullOrWhiteSpace())
+                link.ServerPathToSettings = selPath;
         }
 
         private void btDelete_Click(object sender, EventArgs e)
@@ -128,8 +104,7 @@ namespace Arcas.Settings
 
             if (e.ColumnIndex == 1)
             {
-                var wraptfs = new WrapTfs();
-                var server = wraptfs.ShowTeamProjectPicker(this);
+                var server = TfsRoutineBL.ShowTeamProjectPicker(this);
                 if (server == null)
                     return;
                 tdbli.ServerUri = server;

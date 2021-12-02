@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Arcas.BL.TFS;
 using Arcas.Controls;
 using Cav;
 using Cav.Container;
@@ -11,8 +12,12 @@ namespace Arcas
     {
         public ArcasMain()
         {
+            AssemblyResolver.AddResolver();
+
             InitializeComponent();
+#pragma warning disable CS0618 // Тип или член устарел
             tsVersion.Text = DomainContext.CurrentVersion.ToString();
+#pragma warning restore CS0618 // Тип или член устарел
 
             foreach (var tb in Locator.GetInstances<TabControlBase>())
             {

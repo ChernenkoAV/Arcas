@@ -17,7 +17,6 @@ namespace Arcas.BL
 
     public class TfsDBSaveBL
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event ProgressStateDelegat StatusMessages;
         private void sendStat(string mess)
         {
@@ -33,15 +32,9 @@ namespace Arcas.BL
         /// <returns></returns>
         public Boolean ChekExistsShelveset(TfsDbLink tdlink)
         {
-            using (TFSRoutineBL tfsbl = new TFSRoutineBL())
-            {
-                // Проверяем настройки TFS
-                sendStat("Подключаемся к TFS");
-                tfsbl.VersionControl(tdlink.ServerUri);
-
-                sendStat("Проверка несохраненных данных в шельве");
+            sendStat("Проверка несохраненных данных в шельве");
+            using (TfsRoutineBL tfsbl = new TfsRoutineBL(tdlink.ServerUri))
                 return tfsbl.ExistsShelveset();
-            }
         }
 
         /// <summary>
@@ -51,13 +44,9 @@ namespace Arcas.BL
         /// <returns></returns>
         public void DeleteShelveset(TfsDbLink tdlink)
         {
-            using (TFSRoutineBL tfsbl = new TFSRoutineBL())
+            sendStat("Проверка несохраненных данных в шельве");
+            using (TfsRoutineBL tfsbl = new TfsRoutineBL(tdlink.ServerUri))
             {
-                // Проверяем настройки TFS
-                sendStat("Подключаемся к TFS");
-                tfsbl.VersionControl(tdlink.ServerUri);
-
-                sendStat("Проверка несохраненных данных в шельве");
                 if (!tfsbl.ExistsShelveset())
                     return;
 
@@ -78,7 +67,7 @@ namespace Arcas.BL
             String sqlScript,
             String comment,
             Boolean inTaransaction,
-            List<int> linkedTask)
+            IEnumerable<int> linkedTask)
         {
             try
             {
@@ -116,15 +105,9 @@ namespace Arcas.BL
                 UpdateDbSetting upsets = null;
                 bool useSqlConnection = false;
 
-                using (TFSRoutineBL tfsbl = new TFSRoutineBL())
+                sendStat("Подключаемся к TFS");
+                using (TfsRoutineBL tfsbl = new TfsRoutineBL(tdlink.ServerUri))
                 {
-
-                    // Проверяем переданные соединения с TFS и БД                    
-
-                    // Проверяем настройки TFS
-                    sendStat("Подключаемся к TFS");
-                    tfsbl.VersionControl(tdlink.ServerUri);
-
                     sendStat("Получение настроек поднятия версии.");
                     var tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
                     tfsbl.DownloadFile(tdlink.ServerPathToSettings, tempfile);
