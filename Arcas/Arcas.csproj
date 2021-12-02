@@ -62,6 +62,7 @@
     <SignManifests>true</SignManifests>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>true</GenerateManifests>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
     <ManifestCertificateThumbprint>339DB9C4E7C1C98C48B38ACE620700BE8989F774</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
@@ -72,6 +73,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="cav.snk" />
+    <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gear_wheel.ico" />

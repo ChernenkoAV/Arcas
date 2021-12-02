@@ -32,6 +32,8 @@ namespace Arcas
                 tb.Dock = DockStyle.Fill;
                 tcTabs.TabPages.Add(ts);
             }
+
+            AssemblyResolver.RemoveResolver();
         }
 
         private List<Action> refreshTabAction = new List<Action>();

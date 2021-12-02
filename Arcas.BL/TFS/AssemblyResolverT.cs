@@ -2,11 +2,28 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using Cav;
 
 namespace Arcas.BL.TFS
 {
     public static class AssemblyResolver
     {
+        private static Lazy<string> vsDirs = new Lazy<string>(() =>
+        {
+            var vsdirs = Directory.EnumerateDirectories(@"C:\Program Files (x86)", "Microsoft Visual Studi*", SearchOption.TopDirectoryOnly).ToList();
+            var teDirs = vsdirs
+                .SelectMany(x => Directory.GetFiles(x, "Microsoft.TeamFoundation.VersionControl.Controls.dll", SearchOption.AllDirectories))
+                .ToList();
+
+            if (!teDirs.Any())
+                throw new InvalidOperationException("Не найдено расширение 'Team Explorer' в Visual Studio");
+
+            var pathTfsdll = teDirs.OrderBy(x => x).Last();
+
+            return Path.GetDirectoryName(pathTfsdll);
+        }, LazyThreadSafetyMode.ExecutionAndPublication);
+
         public static void AddResolver()
         {
             AppDomain.CurrentDomain.AssemblyResolve += currentDomain_AssemblyResolve;
@@ -26,27 +43,32 @@ namespace Arcas.BL.TFS
             if (asly != null)
                 return asly;
 
-            if (args.RequestingAssembly == null)
-                return null;
-
             var assemblyFile = assemblyName.Name + ".dll";
 
-            var location = args.RequestingAssembly.Location ?? Assembly.GetEntryAssembly().Location;
-            var requestPath = Path.GetDirectoryName(location);
+            string localiunAss = null;
 
-            var path = Path.Combine(requestPath, assemblyFile);
-
-            if (!File.Exists(path))
+            if (!(args.RequestingAssembly?.Location).IsNullOrWhiteSpace())
             {
-                var targetculture = assemblyName.CultureInfo.TwoLetterISOLanguageName;
-                if (targetculture == null)
-                    throw new FileLoadException($"Not compute culture for {args.Name}");
-                path = Path.Combine(Path.Combine(requestPath, targetculture), assemblyFile);
+                localiunAss = Path.Combine(Path.GetDirectoryName(args.RequestingAssembly.Location), assemblyFile);
+                if (File.Exists(localiunAss))
+                    return Assembly.LoadFrom(localiunAss);
             }
 
-            return File.Exists(path)
-                ? Assembly.LoadFile(path)
-                : null;
+            localiunAss = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), assemblyFile);
+            if (File.Exists(localiunAss))
+                return Assembly.LoadFrom(localiunAss);
+
+            var path = vsDirs.Value;
+            var targetculture = assemblyName.CultureInfo.TwoLetterISOLanguageName;
+            if (targetculture != null && targetculture != "iv")
+                path = Path.Combine(path, targetculture);
+
+            var tgtAss = Path.Combine(path, assemblyFile);
+
+            if (File.Exists(tgtAss))
+                asly = Assembly.LoadFrom(tgtAss);
+
+            return asly;
         }
     }
 }
