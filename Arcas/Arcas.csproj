@@ -18,29 +18,6 @@
     <Prefer32Bit>false</Prefer32Bit>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>..\_Build\publish</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://clickonceget.azurewebsites.net/app/Arcas/</InstallUrl>
-    <UpdateUrl>https://clickonceget.azurewebsites.net/app/Arcas/</UpdateUrl>
-    <ProductName>Аркас</ProductName>
-    <PublisherName>ChernenkoAV</PublisherName>
-    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
-    <UseApplicationTrust>true</UseApplicationTrust>
-    <CreateDesktopShortcut>true</CreateDesktopShortcut>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,21 +30,13 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>gear_wheel.ico</ApplicationIcon>
-    <StartupObject />
+    <ApplicationIcon>gear_wheel.ico</ApplicationIcon>    
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>
-    <SignManifests>true</SignManifests>
-    <TargetZone>LocalIntranet</TargetZone>
-    <GenerateManifests>true</GenerateManifests>
-    <ManifestCertificateThumbprint>339DB9C4E7C1C98C48B38ACE620700BE8989F774</ManifestCertificateThumbprint>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>    
   </PropertyGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="cav.snk" />
-    <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gear_wheel.ico" />
@@ -86,53 +55,5 @@
       <Name>Arcas.UI</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8 %28x86 и x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>Клиентский профиль .NET Framework 3.5 с пакетом обновления 1 %28SP1%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="GenAppVer" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <Major ParameterType="System.Int32" Output="true" />
-      <Minor ParameterType="System.Int32" Output="true" />
-      <Build ParameterType="System.Int32" Output="true" />
-      <Revision ParameterType="System.Int32" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System" />
-      <Code Type="Fragment" Language="cs"><![CDATA[
-            Major = DateTime.Now.Year;
-            Minor = int.Parse(DateTime.Today.ToString("MMdd"));
-            Build = DateTime.Now.Hour;
-            Revision = DateTime.Now.Minute;
-            //AppVer = new Version(DateTime.Now.Year, int.Parse(DateTime.Today.ToString("MMdd")), DateTime.Now.Hour, DateTime.Now.Minute);
-            //AppVer = DateTime.Today.ToString("yyyy") + "."+ DateTime.Today.ToString("MMdd") + "." + DateTime.Now.Hour.ToString() + "." + DateTime.Now.Minute.ToString();
-            ]]></Code>
-    </Task>
-  </UsingTask>
-  <Target Name="BeforeCompile">
-    <GenAppVer>
-      <Output TaskParameter="Major" PropertyName="Major" />
-      <Output TaskParameter="Minor" PropertyName="Minor" />
-      <Output TaskParameter="Build" PropertyName="Build" />
-      <Output TaskParameter="Revision" PropertyName="Revision" />
-    </GenAppVer>
-    <PropertyGroup>
-      <ApplicationVersion>$(Major).$(Minor).$(Build).$(Revision)</ApplicationVersion>
-    </PropertyGroup>
-    <Message Text="------- Application version $(ApplicationVersion)" Importance="High" />
-  </Target>
 </Project>
