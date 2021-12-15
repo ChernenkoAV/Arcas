@@ -32,9 +32,9 @@
     <ApplicationVersion>0.0.1</ApplicationVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>gear_wheel.ico</ApplicationIcon>
+    <ApplicationIcon>..\gear_wheel.ico</ApplicationIcon>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -38,7 +38,7 @@
         <SignAssembly>true</SignAssembly>
     </PropertyGroup>
     <PropertyGroup>
-        <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Cav.Core" Version="7.3.6" />
