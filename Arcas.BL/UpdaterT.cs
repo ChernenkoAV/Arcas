@@ -44,17 +44,18 @@ namespace Arcas.Update
 
             var relsUri = new Uri($"https://api.github.com/repos/{user}/{repo}/releases");
 
-            string contendGitHub;
+            string contendGitHub = null;
 
-            using (var client = new MyWebClient())
+            try
             {
-                client.Headers.Add("Accept", "application/vnd.github.v3+json");
-                client.Headers.Add("User-Agent", Assembly.GetExecutingAssembly().FullName);
-                contendGitHub = client.DownloadString(relsUri);
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add("Accept", "application/vnd.github.v3+json");
+                    client.Headers.Add("User-Agent", Assembly.GetEntryAssembly().FullName);
+                    contendGitHub = client.DownloadString(relsUri);
+                }
             }
-
-            if (contendGitHub.IsNullOrWhiteSpace())
-                throw new InvalidOperationException($"content on {relsUri} is empty");
+            catch { }
 
             var releases = contendGitHub.JsonDeserealize<List<GitHubReleases>>();
 
@@ -71,15 +72,20 @@ namespace Arcas.Update
             if (asset == null)
                 return;
 
+            #region Для фейкового запроса
+            AutoUpdater.HttpUserAgent = Assembly.GetEntryAssembly().FullName;
+            AutoUpdater.AppCastURL = relsUri.AbsoluteUri;
+            #endregion
             AutoUpdater.ParseUpdateInfoEvent += x => uInf(x, asset);
-            AutoUpdater.Start();
+            AutoUpdater.Start(Assembly.GetEntryAssembly());
         }
 
-        private static void uInf(ParseUpdateInfoEventArgs args, asset relData)
-        {
-            args.UpdateInfo.CurrentVersion = Assembly.GetEntryAssembly().GetName().Version.ToString() + "1";
-            args.UpdateInfo.DownloadURL = relData.browser_download_url;
-        }
+        private static void uInf(ParseUpdateInfoEventArgs args, asset relData) =>
+            args.UpdateInfo = new UpdateInfoEventArgs
+            {
+                CurrentVersion = Assembly.GetEntryAssembly().GetName().Version.ToString() + "1",
+                DownloadURL = relData.browser_download_url
+            };
 
 #pragma warning disable IDE1006 // Стили именования
         internal class asset

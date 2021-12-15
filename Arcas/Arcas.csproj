@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ApplicationVersion>0.1.1-dev</ApplicationVersion>
+    <ApplicationVersion>0.0.1-dev</ApplicationVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -62,21 +62,28 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
   <Target Name="BeforeCompile">
+
     <PropertyGroup>
       <ApplicationVersion Condition=" $(ApplicationVersion) == ''">$([System.DateTime]::Now.Year).$([System.DateTime]::Today.ToString("MMdd")).$([System.DateTime]::Now.Hour).$([System.DateTime]::Now.Minute)</ApplicationVersion>
     </PropertyGroup>
+
     <Message Text="------- Application version $(ApplicationVersion)" Importance="High" />
+
     <Error Condition="'$(ApplicationVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
     <PropertyGroup Condition=" '$(ApplicationVersion.Split(`.`)[0])' == '0' ">
       <VerAssembly>0.1.0.0</VerAssembly>
     </PropertyGroup>
+
     <PropertyGroup Condition=" '$(ApplicationVersion.Split(`.`)[0])' != '0' ">
       <VerAssembly>$(ApplicationVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
     </PropertyGroup>
+
     <PropertyGroup>
       <VerFile>$(VerAssembly.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
     </PropertyGroup>
+
     <ItemGroup>
       <AssemblyAttributes Include="AssemblyVersion">
         <_Parameter1>$(VerAssembly)</_Parameter1>
@@ -88,9 +95,22 @@
         <_Parameter1>$(ApplicationVersion)</_Parameter1>
       </AssemblyAttributes>
     </ItemGroup>
+
     <WriteCodeFragment Language="C#" OutputFile="$(BaseIntermediateOutputPath)/AssemblyVer.cs" AssemblyAttributes="@(AssemblyAttributes)" />
+
     <ItemGroup>
       <Compile Include="$(BaseIntermediateOutputPath)/AssemblyVer.cs" />
     </ItemGroup>
+
   </Target>
+
+    <Target Name="ZippedOutput" AfterTargets="Build">
+        <Message Text="------- Zipped" Importance="High" />
+
+        <ZipDirectory
+          SourceDirectory="$(OutputPath)"
+          DestinationFile="$(OutputPath)\..\$(AssemblyName).zip"
+          Overwrite="true"/>
+    </Target>
+
 </Project>
