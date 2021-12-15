@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{B4E45987-D126-40AB-A6EC-2B1DFB0B5F73}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Arcas.BL</RootNamespace>
+        <AssemblyName>Arcas.BL</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+        <RestorePackages>true</RestorePackages>
+        <TargetFrameworkProfile />
+        <NuGetPackageImportStamp>
+        </NuGetPackageImportStamp>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\_Build\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\_Build\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup>
+        <SignAssembly>true</SignAssembly>
+    </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Cav.Core" Version="7.3.6" />
+        <PackageReference Include="Cav.WinForms" Version="4.0.1" />
+        <PackageReference Include="WebSphereMqClient" Version="8.0.0.7" ExcludeAssets="all" GeneratePathProperty="true" />
+        <PackageReference Include="Autoupdater.NET.Official"  Version="1.7.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="$(PkgWebSphereMqClient)\lib\net20\amqmdnet.dll">
+            <Private>true</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Microsoft.TeamFoundation.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
+            <SpecificVersion>False</SpecificVersion>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.ProjectManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.ProjectManagement.dll</HintPath>
+            <SpecificVersion>False</SpecificVersion>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
+            <SpecificVersion>False</SpecificVersion>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.VersionControl.Common, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.VersionControl.Common.dll</HintPath>
+            <SpecificVersion>False</SpecificVersion>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.VersionControl.Controls, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.VersionControl.Controls.dll</HintPath>
+            <SpecificVersion>False</SpecificVersion>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.WorkItemTracking.Client.dll</HintPath>
+            <SpecificVersion>False</SpecificVersion>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.ComponentModel.Composition" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="System.Drawing" />
+        <Reference Include="System.IdentityModel" />
+        <Reference Include="System.Runtime.Serialization" />
+        <Reference Include="System.ServiceModel" />
+        <Reference Include="System.Web.Services" />
+        <Reference Include="System.Windows.Forms" />
+        <Reference Include="System.Xml.Linq" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Config.cs" />
+        <Compile Include="CsGenFromWsdlXsd.cs" />
+        <Compile Include="IbmMq\IbmMqClient.cs" />
+        <Compile Include="IbmMq\MqBL.cs" />
+        <Compile Include="IbmMq\MqMessageGeneric.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="SettingClass.cs" />
+        <Compile Include="TfsDBSaveBL.cs" />
+        <Compile Include="TFS\AssemblyResolverT.cs" />
+        <Compile Include="TFS\TFSRoutine.cs" />
+        <Compile Include="UpdaterT.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="cav.snk" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
