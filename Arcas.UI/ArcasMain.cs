@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Arcas.BL.TFS;
 using Arcas.Controls;
+using Arcas.Update;
 using Cav;
 using Cav.Container;
 
@@ -16,7 +17,7 @@ namespace Arcas
 
             InitializeComponent();
 #pragma warning disable CS0618 // Тип или член устарел
-            tsVersion.Text = DomainContext.CurrentVersion.ToString();
+            tsVersion.Text = Updater.CurrentVersion();
 #pragma warning restore CS0618 // Тип или член устарел
 
             foreach (var tb in Locator.GetInstances<TabControlBase>())
