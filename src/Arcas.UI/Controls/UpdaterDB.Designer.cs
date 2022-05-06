@@ -104,7 +104,7 @@
             // 
             // tbComment
             // 
-            this.tbComment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tbComment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbComment.Location = new System.Drawing.Point(3, 52);
             this.tbComment.Multiline = true;
@@ -126,8 +126,8 @@
             // 
             // rtbScriptBody
             // 
-            this.rtbScriptBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.rtbScriptBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbScriptBody.AutoWordSelection = true;
             this.rtbScriptBody.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -399,7 +399,7 @@
             // 
             // lbLinkedWirkItem
             // 
-            this.lbLinkedWirkItem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lbLinkedWirkItem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.lbLinkedWirkItem.FormattingEnabled = true;
             this.lbLinkedWirkItem.Location = new System.Drawing.Point(3, 410);

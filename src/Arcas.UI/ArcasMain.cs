@@ -29,6 +29,7 @@ namespace Arcas
                 ts.Text = tb.Text;
                 ts.UseVisualStyleBackColor = true;
                 refreshTabAction.Add(tb.RefreshTab);
+                rcloseAppAction.Add(tb.CloseApp);
                 tb.StateProgress += savbl_StatusMessages;
                 tb.Dock = DockStyle.Fill;
                 tcTabs.TabPages.Add(ts);
@@ -36,11 +37,10 @@ namespace Arcas
         }
 
         private List<Action> refreshTabAction = new List<Action>();
+        private List<Action> rcloseAppAction = new List<Action>();
 
-        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e) =>
+            Close();
 
         private void tabPageDBVer_Enter(object sender, EventArgs e)
         {
@@ -51,7 +51,7 @@ namespace Arcas
                 }
                 catch (Exception ex)
                 {
-                    String msg = ex.Expand();
+                    var msg = ex.Expand();
                     if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                         msg = ex.InnerException.Message;
 
@@ -59,14 +59,21 @@ namespace Arcas
                 }
         }
 
-        void savbl_StatusMessages(string message)
+        private void savbl_StatusMessages(string message)
         {
             tsProgressMessage.Text = message;
-            this.Refresh();
+            Refresh();
         }
 
         private void arcasMainMindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            foreach (var closeTab in rcloseAppAction)
+                try
+                {
+                    closeTab();
+                }
+                catch { }
+
             Config.Instance.Save();
 
             try
@@ -76,9 +83,7 @@ namespace Arcas
             catch { }
         }
 
-        private void arcasMain_Load(object sender, EventArgs e)
-        {
+        private void arcasMain_Load(object sender, EventArgs e) =>
             tabPageDBVer_Enter(null, null);
-        }
     }
 }

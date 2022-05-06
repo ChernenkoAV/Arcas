@@ -15,11 +15,11 @@ namespace Arcas.Controls
         public UpdaterDB()
         {
             InitializeComponent();
-            this.Text = "Накатка БД";
+            Text = "Накатка БД";
         }
 
-        Boolean textChanged = true;
-        FormatBinaryData formatbin = null;
+        private Boolean textChanged = true;
+        private FormatBinaryData formatbin = null;
 
         private void btSaveScript_Click(object sender, EventArgs e)
         {
@@ -47,13 +47,15 @@ namespace Arcas.Controls
                     msg = ex.InnerException.Message;
             }
 
+            var taskIds = lbLinkedWirkItem.Items.Cast<Lwi>().Select(x => x.ID).ToList();
+
             if (msg.IsNullOrWhiteSpace())
                 msg = savbl.SaveScript(
                     (TfsDbLink)cbxTfsDbLinc.SelectedItem,
                     rtbScriptBody.Text,
                     tbComment.Text,
                     chbTransaction.Checked,
-                    lbLinkedWirkItem.Items.Cast<Lwi>().Select(x => x.ID).ToList());
+                    taskIds);
             if (msg.IsNullOrWhiteSpace())
                 Dialogs.InformationF(this, "Успешно");
             else
@@ -62,23 +64,44 @@ namespace Arcas.Controls
             textChanged = false;
             btSaveScript.Enabled = true;
             savbl_StatusMessages(String.Empty);
-            Config.Instance.SelestedTFSDB = cbxTfsDbLinc.Text;
+
+            Config.Instance.UpdaterDb.SelestedTFSDB = cbxTfsDbLinc.Text;
+            Config.Instance.UpdaterDb.Comment = tbComment.Text;
+            Config.Instance.UpdaterDb.Script = rtbScriptBody.Text;
+            Config.Instance.UpdaterDb.Tasks = taskIds;
+            Config.Instance.Save();
+
             Cursor.Current = Cursors.Default;
         }
 
-        private void savbl_StatusMessages(string message)
+        private void savbl_StatusMessages(string message) =>
+            SetSateProgress(message);
+
+        public override void CloseApp()
         {
-            this.SetSateProgress(message);
+            Config.Instance.UpdaterDb.SelestedTFSDB = cbxTfsDbLinc.Text;
+            Config.Instance.UpdaterDb.Comment = tbComment.Text;
+            Config.Instance.UpdaterDb.Script = rtbScriptBody.Text;
+            Config.Instance.UpdaterDb.Tasks = lbLinkedWirkItem.Items.Cast<Lwi>().Select(x => x.ID).ToList();
         }
 
         public override void RefreshTab()
         {
-            var selName = Config.Instance.SelestedTFSDB;
-            cbxTfsDbLinc.DataSource = Config.Instance.TfsDbSets;
+            var selName = Config.Instance.UpdaterDb.SelestedTFSDB ?? Config.Instance.SelestedTFSDB;
+
+            if (Config.Instance.UpdaterDb.TfsDbSets == null || !Config.Instance.UpdaterDb.TfsDbSets.Any())
+                Config.Instance.UpdaterDb.TfsDbSets = Config.Instance.TfsDbSets;
+            cbxTfsDbLinc.DataSource = Config.Instance.UpdaterDb.TfsDbSets
+            ;
             if (cbxTfsDbLinc.DataSource != null)
                 cbxTfsDbLinc.SelectedItem = ((List<TfsDbLink>)cbxTfsDbLinc.DataSource).FirstOrDefault(x => x.Name == selName);
             if (cbxTfsDbLinc.SelectedItem == null && cbxTfsDbLinc.Items.Count > 0)
                 cbxTfsDbLinc.SelectedIndex = 0;
+
+            tbComment.Text = Config.Instance.UpdaterDb.Comment;
+            rtbScriptBody.Text = Config.Instance.UpdaterDb.Script;
+
+            addTaskOnIds(Config.Instance.UpdaterDb.Tasks);
 
             cbxTfsDbLinc_SelectionChangeCommitted(null, null);
         }
@@ -95,9 +118,7 @@ namespace Arcas.Controls
             {
                 tvQuerys.Nodes.Clear();
 
-                TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-
-                if (curset == null || curset.ServerUri == null || curset.ServerPathToSettings.IsNullOrWhiteSpace())
+                if (!(cbxTfsDbLinc.SelectedItem is TfsDbLink curset) || curset.ServerUri == null || curset.ServerPathToSettings.IsNullOrWhiteSpace())
                 {
                     bttvQueryRefresh.Enabled = false;
                     return;
@@ -134,7 +155,7 @@ namespace Arcas.Controls
             }
             catch (Exception ex)
             {
-                String exMsg = ex.Expand();
+                var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
                 Dialogs.ErrorF(this, exMsg);
@@ -147,8 +168,7 @@ namespace Arcas.Controls
             {
                 lbWorkItems.Items.Clear();
 
-                TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-                if (curset == null)
+                if (!(cbxTfsDbLinc.SelectedItem is TfsDbLink curset))
                     return;
 
                 if (curset.ServerUri == null)
@@ -157,7 +177,7 @@ namespace Arcas.Controls
                     return;
                 }
 
-                QueryItemNode qin = (QueryItemNode)e.Node.Tag;
+                var qin = (QueryItemNode)e.Node.Tag;
 
                 if (qin.IsFolder)
                     return;
@@ -168,27 +188,26 @@ namespace Arcas.Controls
             }
             catch (Exception ex)
             {
-                String exMsg = ex.Expand();
+                var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
                 Dialogs.ErrorF(this, exMsg);
             }
         }
-        class Lwi
+
+        private class Lwi
         {
             public int ID { get; set; }
             public String Title { get; set; }
-            public override string ToString()
-            {
-                return $"({ID}) {Title}";
-            }
+            public override string ToString() =>
+                $"({ID}) {Title}";
         }
 
         private void btAddWorkItem_Click(object sender, EventArgs e)
         {
             foreach (Lwi item in lbWorkItems.SelectedItems)
             {
-                Lwi si = (Lwi)item;
+                var si = item;
 
                 if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == si.ID))
                     continue;
@@ -198,47 +217,54 @@ namespace Arcas.Controls
             lbWorkItems.SelectedItems.Clear();
         }
 
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Char.IsDigit(e.KeyChar);
-        }
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e) =>
+            e.Handled = !char.IsDigit(e.KeyChar);
 
-        private void btAddInIDTask_Click(object sender, EventArgs e)
+        private void addTaskOnIds(IEnumerable<int> taskIds)
         {
+            if (taskIds == null)
+                return;
+
             try
             {
-                int idTask;
-                if (!int.TryParse(tbIdTask.Text, out idTask))
+                if (!(cbxTfsDbLinc.SelectedItem is TfsDbLink curset))
                     return;
 
-                if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == idTask))
-                    return;
-
-                TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-                if (curset == null)
-                    return;
-
-                if (curset.ServerUri == null)
+                foreach (var tskId in taskIds)
                 {
-                    Dialogs.InformationF(this, "В настройках связки не указан сервер TFS");
-                    return;
+                    if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == tskId))
+                        continue;
+
+                    if (curset.ServerUri == null)
+                    {
+                        Dialogs.InformationF(this, "В настройках связки не указан сервер TFS");
+                        return;
+                    }
+
+                    var title = TfsRoutineBL.TitleWorkItemByIdGet(curset.ServerUri, tskId);
+                    if (title.IsNullOrWhiteSpace())
+                        return;
+
+                    lbLinkedWirkItem.Items.Add(new Lwi() { ID = tskId, Title = title });
                 }
-
-                var title = TfsRoutineBL.TitleWorkItemByIdGet(curset.ServerUri, idTask);
-                if (title.IsNullOrWhiteSpace())
-                    return;
-
-                lbLinkedWirkItem.Items.Add(new Lwi() { ID = idTask, Title = title });
-
-                tbIdTask.Text = null;
             }
             catch (Exception ex)
             {
-                String exMsg = ex.Expand();
+                var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
                 Dialogs.ErrorF(this, exMsg);
             }
+        }
+
+        private void btAddInIDTask_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(tbIdTask.Text, out var idTask))
+                return;
+
+            addTaskOnIds(new[] { idTask });
+
+            tbIdTask.Text = null;
         }
 
         private void lbLinkedWirkItem_KeyUp(object sender, KeyEventArgs e)
@@ -267,22 +293,18 @@ namespace Arcas.Controls
         private void btTfsDbLinkSettings_Click(object sender, EventArgs e)
         {
             new TFSDBLinkForm().ShowDialog(this);
-            this.RefreshTab();
+            RefreshTab();
         }
 
-        private void tbScriptBody_TextChanged(object sender, EventArgs e)
-        {
+        private void tbScriptBody_TextChanged(object sender, EventArgs e) =>
             textChanged = true;
-        }
 
         private void cbxTfsDbLinc_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-
-            this.btSaveScript.Enabled = false;
+            btSaveScript.Enabled = false;
             formatbin = null;
 
-            if (curset != null)
+            if (cbxTfsDbLinc.SelectedItem is TfsDbLink curset)
             {
                 if (!curset.ServerPathToSettings.IsNullOrWhiteSpace() & curset.ServerUri != null)
                 {
@@ -299,11 +321,11 @@ namespace Arcas.Controls
                             formatbin = upsets.FormatBinary;
                         }
 
-                        this.btSaveScript.Enabled = true;
+                        btSaveScript.Enabled = true;
                     }
                     catch (Exception ex)
                     {
-                        String exMsg = ex.Expand();
+                        var exMsg = ex.Expand();
                         if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                             exMsg = ex.InnerException.Message;
                         Dialogs.ErrorF(this, exMsg);
@@ -315,18 +337,16 @@ namespace Arcas.Controls
                     }
                 }
 
-                Config.Instance.SelestedTFSDB = curset.Name;
+                Config.Instance.UpdaterDb.SelestedTFSDB = curset.Name;
             }
 
             bttvQueryRefresh_Click(null, null);
         }
 
-        private void tsmiClearScriptText_Click(object sender, EventArgs e)
-        {
+        private void tsmiClearScriptText_Click(object sender, EventArgs e) =>
             rtbScriptBody.Text = null;
-        }
 
-        int posCurscript = 0;
+        private int posCurscript = 0;
 
         private void cmsScriptArea_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -383,10 +403,8 @@ namespace Arcas.Controls
             }
         }
 
-        private void tsmiCopySelect_Click(object sender, EventArgs e)
-        {
+        private void tsmiCopySelect_Click(object sender, EventArgs e) =>
             Clipboard.SetText(rtbScriptBody.SelectedText, TextDataFormat.UnicodeText);
-        }
 
         private void tsmiPaste_Click(object sender, EventArgs e)
         {
@@ -415,10 +433,8 @@ namespace Arcas.Controls
             rtbScriptBody.ScrollToCaret();
         }
 
-        private void rtbScriptBody_MouseDown(object sender, MouseEventArgs e)
-        {
+        private void rtbScriptBody_MouseDown(object sender, MouseEventArgs e) =>
             rtbScriptBody.Focus();
-        }
 
         private void tbIdTask_KeyDown(object sender, KeyEventArgs e)
         {

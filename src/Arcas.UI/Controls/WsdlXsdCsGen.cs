@@ -27,7 +27,7 @@ namespace Arcas.Controls
 
         private CsGenFromWsdlXsd csGenFromWsdlXsd;
 
-        private void btFromFile_Click(object sender, System.EventArgs e)
+        private void btFromFile_Click(object sender, EventArgs e)
         {
             var pathfile = Dialogs.FileBrowser(
                  Owner: this,
@@ -41,7 +41,7 @@ namespace Arcas.Controls
             tbWsdlUri.Text = pathfile;
         }
 
-        private void btSelFileForSave_Click(object sender, System.EventArgs e)
+        private void btSelFileForSave_Click(object sender, EventArgs e)
         {
             var pathfile = Dialogs.SaveFile(
                 Owner: this,
@@ -57,9 +57,8 @@ namespace Arcas.Controls
             tbSaveWsdlTo.Text = pathfile;
         }
 
-        private WsdlXsdGenSettingT createSetting()
-        {
-            return new WsdlXsdGenSettingT()
+        private WsdlXsdGenSettingT createSetting() =>
+            new WsdlXsdGenSettingT()
             {
                 Wsdl_PathToWsdl = tbWsdlUri.Text,
                 Wsdl_PathToSaveFile = tbSaveWsdlTo.Text,
@@ -69,9 +68,8 @@ namespace Arcas.Controls
                 Xsd_PathToSaveFile = tbSaveXsdTo.Text,
                 Xsd_Namespace = tbTargetNamespaceXsd.Text,
             };
-        }
 
-        private void btGenerateCsFromWsdl_Click(object sender, System.EventArgs e)
+        private void btGenerateCsFromWsdl_Click(object sender, EventArgs e)
         {
             try
             {

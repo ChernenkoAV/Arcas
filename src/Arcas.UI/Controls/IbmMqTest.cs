@@ -15,7 +15,7 @@ namespace Arcas.Controls
             MqBL mqBL)
         {
             InitializeComponent();
-            this.Text = "Взаимодействие с IBM Mq";
+            Text = "Взаимодействие с IBM Mq";
             dgvAddProperties.AutoGenerateColumns = false;
             dgvAddProperties.DataSource = addpoplist;
             APKeyCol.DataPropertyName = nameof(KeyValuePair<string, string>.Key);
@@ -43,7 +43,7 @@ namespace Arcas.Controls
 
             try
             {
-                MqSettingT sets = createMqSetting();
+                var sets = createMqSetting();
 
                 tbMessageID.Text = mqBL.Send(
                     sets,
@@ -60,17 +60,16 @@ namespace Arcas.Controls
             }
         }
 
-        private MqSettingT createMqSetting()
-        {
-            MqSettingT sets = new MqSettingT();
-            sets.Host = tbHost.Text.GetNullIfIsNullOrWhiteSpace();
-            sets.ManagerName = tbManagerName.Text.GetNullIfIsNullOrWhiteSpace();
-            sets.ChannelName = tbChannelName.Text.GetNullIfIsNullOrWhiteSpace();
-            sets.QueueName = tbQueueName.Text.GetNullIfIsNullOrWhiteSpace();
-            sets.UserName = tbUser.Text.GetNullIfIsNullOrWhiteSpace();
-            sets.Password = tbPass.Text.GetNullIfIsNullOrWhiteSpace();
-            return sets;
-        }
+        private MqSettingT createMqSetting() =>
+            new MqSettingT
+            {
+                Host = tbHost.Text.GetNullIfIsNullOrWhiteSpace(),
+                ManagerName = tbManagerName.Text.GetNullIfIsNullOrWhiteSpace(),
+                ChannelName = tbChannelName.Text.GetNullIfIsNullOrWhiteSpace(),
+                QueueName = tbQueueName.Text.GetNullIfIsNullOrWhiteSpace(),
+                UserName = tbUser.Text.GetNullIfIsNullOrWhiteSpace(),
+                Password = tbPass.Text.GetNullIfIsNullOrWhiteSpace()
+            };
 
         private void btGetMessage_Click(object sender, EventArgs e)
         {
@@ -78,7 +77,7 @@ namespace Arcas.Controls
             tbPutDate.Text = null;
             tbBodyMessage.Text = null;
 
-            MqSettingT sets = createMqSetting();
+            var sets = createMqSetting();
 
             try
             {
@@ -119,7 +118,7 @@ namespace Arcas.Controls
             {
                 addpoplist.Add(new KeyValuePair<string, string>("Method", "SendRequest"));
 
-                XName enoNode = xl.Root.Name.Namespace + "ServiceTypeCode";
+                var enoNode = xl.Root.Name.Namespace + "ServiceTypeCode";
 
                 var sn = xl.Descendants(enoNode).FirstOrDefault();
                 if (sn == null)
@@ -150,7 +149,7 @@ namespace Arcas.Controls
                     tbBodyMessage.Text = File.ReadAllText(file);
                     fillAddProp(tbBodyMessage.Text);
 
-                    MqSettingT sets = createMqSetting();
+                    var sets = createMqSetting();
 
                     tbMessageID.Text = mqBL.Send(
                         sets,
