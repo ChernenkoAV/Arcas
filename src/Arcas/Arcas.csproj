@@ -109,7 +109,7 @@
 
         <ZipDirectory
           SourceDirectory="$(OutputPath)"
-          DestinationFile="$(OutputPath)\..\$(AssemblyName).zip"
+          DestinationFile="$(OutputPath)\..\$(AssemblyName)_$(ApplicationVersion).zip"
           Overwrite="true"/>
     </Target>
 
