@@ -1,4 +1,5 @@
 ﻿using System;
+using Arcas.BL.TFS;
 using Arcas.Update;
 
 namespace Arcas
@@ -11,6 +12,11 @@ namespace Arcas
         [STAThread]
         public static void Main()
         {
+            AppContext.SetSwitch("Switch.System.Security.Cryptography.Xml.UseInsecureHashAlgorithms", true);
+            AppContext.SetSwitch("Switch.System.Security.Cryptography.Pkcs.UseInsecureHashAlgorithms", true);
+
+            AssemblyResolver.AddResolver();
+
             Updater.UpdateApp();
 
             System.Windows.Forms.Application.EnableVisualStyles();

@@ -87,6 +87,9 @@ namespace Arcas.Controls
 
         public override void RefreshTab()
         {
+            if (Config.Instance.UpdaterDb == null)
+                Config.Instance.UpdaterDb = new UpdaterDbSetting();
+
             var selName = Config.Instance.UpdaterDb.SelestedTFSDB ?? Config.Instance.SelestedTFSDB;
 
             if (Config.Instance.UpdaterDb.TfsDbSets == null || !Config.Instance.UpdaterDb.TfsDbSets.Any())

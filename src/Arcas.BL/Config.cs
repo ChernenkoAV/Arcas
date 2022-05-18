@@ -9,8 +9,6 @@ namespace Arcas
     public class Config : ProgramSettingsBase<Config>
 #pragma warning restore CS0618 // Тип или член устарел
     {
-        public Config() =>
-            UpdaterDb = new UpdaterDbSetting();
         /// <summary>
         /// Последняя использованная конфигурация при накатке БД
         /// </summary>

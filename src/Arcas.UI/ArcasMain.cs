@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Arcas.BL.TFS;
 using Arcas.Controls;
 using Arcas.Update;
 using Cav;
@@ -13,8 +12,6 @@ namespace Arcas
     {
         public ArcasMain()
         {
-            AssemblyResolver.AddResolver();
-
             InitializeComponent();
 #pragma warning disable CS0618 // Тип или член устарел
             tsVersion.Text = Updater.CurrentVersion();
