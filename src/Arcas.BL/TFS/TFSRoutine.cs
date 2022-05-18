@@ -56,8 +56,6 @@ namespace Arcas.BL.TFS
     {
         public TfsRoutineBL(Uri serverTfs)
         {
-            AssemblyResolver.AddResolver();
-
             // чистим папку
             if (Directory.Exists(Tempdir))
                 Utils.DeleteDirectory(Tempdir);

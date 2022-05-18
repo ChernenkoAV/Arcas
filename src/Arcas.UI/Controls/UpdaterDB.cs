@@ -87,6 +87,8 @@ namespace Arcas.Controls
 
         public override void RefreshTab()
         {
+            AssemblyResolver.AddResolver();
+
             if (Config.Instance.UpdaterDb == null)
                 Config.Instance.UpdaterDb = new UpdaterDbSetting();
 
