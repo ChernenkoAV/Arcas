@@ -5,7 +5,6 @@ using IBM.WMQ;
 
 namespace Arcas.BL.IbmMq
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
     public class IBMMqClient : IDisposable
     {
         private IBMMqClient() { }
@@ -25,9 +24,8 @@ namespace Arcas.BL.IbmMq
         /// </summary>
         /// <param name="mqSetting">Настройки очереди</param>
         /// <returns></returns>
-        public static IBMMqClient CreateClient(MqSettingT mqSetting)
-        {
-            return new IBMMqClient()
+        public static IBMMqClient CreateClient(MqSettingT mqSetting) =>
+            new IBMMqClient()
             {
                 host = mqSetting.Host,
                 managerName = mqSetting.ManagerName,
@@ -36,14 +34,15 @@ namespace Arcas.BL.IbmMq
                 userName = mqSetting.UserName,
                 password = mqSetting.Password
             };
-        }
 
         private MQQueueManager createManager()
         {
-            var properties = new Hashtable();
-            properties.Add(MQC.TRANSPORT_PROPERTY, MQC.TRANSPORT_MQSERIES_MANAGED);
-            properties.Add(MQC.CONNECTION_NAME_PROPERTY, host);
-            properties.Add(MQC.CHANNEL_PROPERTY, channelName);
+            var properties = new Hashtable
+            {
+                { MQC.TRANSPORT_PROPERTY, MQC.TRANSPORT_MQSERIES_MANAGED },
+                { MQC.CONNECTION_NAME_PROPERTY, host },
+                { MQC.CHANNEL_PROPERTY, channelName }
+            };
             if (!string.IsNullOrEmpty(userName))
                 properties.Add(MQC.USER_ID_PROPERTY, userName);
             if (!string.IsNullOrEmpty(password))
@@ -58,17 +57,19 @@ namespace Arcas.BL.IbmMq
         /// </summary>
         public void Send(MqMessageGeneric mqMessage)
         {
-            String qname = this.queueName;
+            var qname = queueName;
 
             if (String.IsNullOrWhiteSpace(qname))
                 throw new ArgumentNullException("Не определено имя очереди");
 
             try
             {
-                message = new MQMessage();
-                message.Persistence = MQC.MQPER_PERSISTENT;
-                message.Format = MQC.MQFMT_STRING;
-                message.CharacterSet = MQC.CODESET_UTF;
+                message = new MQMessage
+                {
+                    Persistence = MQC.MQPER_PERSISTENT,
+                    Format = MQC.MQFMT_STRING,
+                    CharacterSet = MQC.CODESET_UTF
+                };
 
                 foreach (var prop in mqMessage.AddedProperties)
                     message.SetStringProperty(prop.Key, prop.Value);
@@ -104,14 +105,16 @@ namespace Arcas.BL.IbmMq
         {
             MqMessageGeneric res = null;
 
-            String qname = this.queueName;
+            var qname = queueName;
 
             if (String.IsNullOrWhiteSpace(qname))
                 throw new ArgumentNullException("Не определено имя очереди");
 
-            var getMessageOptions = new MQGetMessageOptions();
-            getMessageOptions.Options = MQC.MQGMO_WAIT + MQC.MQGMO_SYNCPOINT;
-            getMessageOptions.WaitInterval = 100;  // 1 seconds wait​
+            var getMessageOptions = new MQGetMessageOptions
+            {
+                Options = MQC.MQGMO_WAIT + MQC.MQGMO_SYNCPOINT,
+                WaitInterval = 100  // 1 seconds wait​
+            };
 
             try
             {
@@ -128,16 +131,18 @@ namespace Arcas.BL.IbmMq
 
                     q.Get(message, getMessageOptions);
 
-                res = new MqMessageGeneric();
-                res.Body = Encoding.UTF8.GetString(message.ReadBytes(message.MessageLength));
-                res.MessageID = message.MessageId;
-                res.PutDateTime = message.PutDateTime;
+                res = new MqMessageGeneric
+                {
+                    Body = Encoding.UTF8.GetString(message.ReadBytes(message.MessageLength)),
+                    MessageID = message.MessageId,
+                    PutDateTime = message.PutDateTime
+                };
 
                 var inames = message.GetPropertyNames("%");
                 if (inames != null)
                     while (inames.MoveNext())
                     {
-                        String name = inames.Current.ToString();
+                        var name = inames.Current.ToString();
                         if (name.ToLower().Contains("jms") ||
                             name.ToLower().Contains("mcd"))
                             continue;
@@ -175,7 +180,6 @@ namespace Arcas.BL.IbmMq
 
         #region Члены IDisposable
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
         public void Dispose()
         {
             if (mqManager != null && mqManager.IsConnected)

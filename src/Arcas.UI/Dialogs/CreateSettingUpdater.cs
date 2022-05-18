@@ -19,10 +19,7 @@ namespace Arcas.Settings
             private HashSet<Control> mErrors = new HashSet<Control>();
             private ErrorProvider mProvider;
 
-            public ErrorTracker(ErrorProvider provider)
-            {
-                mProvider = provider;
-            }
+            public ErrorTracker(ErrorProvider provider) => mProvider = provider;
             public void SetError(Control ctl, string text)
             {
                 if (string.IsNullOrEmpty(text))
@@ -32,14 +29,12 @@ namespace Arcas.Settings
                     mErrors.Add(ctl);
                 mProvider.SetError(ctl, text);
             }
-            public int Count { get { return mErrors.Count; } }
+            public int Count => mErrors.Count;
 
-            public override string ToString()
-            {
-                return !mErrors.Any()
-                ? null
-                : mErrors.Select(x => mProvider.GetError(x)).JoinValuesToString(Environment.NewLine);
-            }
+            public override string ToString() =>
+                !mErrors.Any()
+                    ? null
+                    : mErrors.Select(x => mProvider.GetError(x)).JoinValuesToString(Environment.NewLine);
         }
 
         private class DbTypeItem
@@ -48,12 +43,10 @@ namespace Arcas.Settings
             public byte[] AssembyRawBytes { get; set; }
             public List<byte[]> LinkedAssembyRawBytes { get; set; }
             public AssemblyName AssembyNameFile { get; set; }
-            public override string ToString()
-            {
-                return ConType == null
-                ? "<Добавить сборку>"
-                : $"{ConType.ToString()} | {AssembyNameFile.ToString()}";
-            }
+            public override string ToString() =>
+                ConType == null
+                    ? "<Добавить сборку>"
+                    : $"{ConType} | {AssembyNameFile}";
         }
 
         public CreateSettingUpdater()
@@ -74,9 +67,8 @@ namespace Arcas.Settings
         private ErrorTracker errorTracker = null;
         private TfsDbLink editLink = null;
 
-        private UpdateDbSetting dbSettingGet(DbTypeItem dbItem)
-        {
-            return new UpdateDbSetting()
+        private UpdateDbSetting dbSettingGet(DbTypeItem dbItem) =>
+            new UpdateDbSetting()
             {
                 ServerPathScripts = tbFolderForScripts.Text,
                 TypeConnectionFullName = dbItem.ConType.ToString(),
@@ -92,7 +84,6 @@ namespace Arcas.Settings
                     FormatByte = tbFormatBinFormat.Text
                 }
             };
-        }
 
         private void dbSettingLoad(UpdateDbSetting upsets)
         {
@@ -101,8 +92,8 @@ namespace Arcas.Settings
                 throw new Exception("Получение файла настроек неуспешно");
             }
 
-            Type conn = typeof(SqlConnection);
-            Boolean useSqlConnection = true;
+            var conn = typeof(SqlConnection);
+            var useSqlConnection = true;
 
             if (upsets.TypeConnectionFullName != conn.ToString())
             {
@@ -150,11 +141,13 @@ namespace Arcas.Settings
 
             if (!useSqlConnection)
             {
-                var item = new DbTypeItem();
-                item.AssembyRawBytes = upsets.AssemplyWithImplementDbConnection;
-                item.LinkedAssembyRawBytes = upsets.LinkedAssemblyDbConnection;
-                item.ConType = conn;
-                item.AssembyNameFile = conn.Assembly.GetName();
+                var item = new DbTypeItem
+                {
+                    AssembyRawBytes = upsets.AssemplyWithImplementDbConnection,
+                    LinkedAssembyRawBytes = upsets.LinkedAssemblyDbConnection,
+                    ConType = conn,
+                    AssembyNameFile = conn.Assembly.GetName()
+                };
 
                 cmbDbConectionType.Items.Insert(cmbDbConectionType.Items.Count - 1, item);
                 cmbDbConectionType.SelectedItem = item;
@@ -186,7 +179,7 @@ namespace Arcas.Settings
             try
             {
                 UpdateDbSetting upsets = null;
-                using (TfsRoutineBL tfsbl = new TfsRoutineBL(editLink.ServerUri))
+                using (var tfsbl = new TfsRoutineBL(editLink.ServerUri))
                 {
                     tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
                     tfsbl.DownloadFile(editLink.ServerPathToSettings, tempfile);
@@ -204,7 +197,7 @@ namespace Arcas.Settings
                 }
                 catch (Exception ex)
                 {
-                    String msg = ex.Expand();
+                    var msg = ex.Expand();
                     if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                         msg = ex.InnerException.Message;
                     throw new Exception("Получение файла настроек неуспешно. Exception: " + msg);
@@ -326,7 +319,7 @@ namespace Arcas.Settings
             if (cmbDbConectionType.SelectedIndex < 0)
                 return;
 
-            DbTypeItem selItem = (DbTypeItem)cmbDbConectionType.SelectedItem;
+            var selItem = (DbTypeItem)cmbDbConectionType.SelectedItem;
 
             if (selItem.ConType != null)
             {
@@ -348,7 +341,7 @@ namespace Arcas.Settings
                 return;
             }
 
-            Dictionary<string, Tuple<Assembly, byte[]>> assemlys = new Dictionary<string, Tuple<Assembly, byte[]>>();
+            var assemlys = new Dictionary<string, Tuple<Assembly, byte[]>>();
 
             try
             {
@@ -385,9 +378,11 @@ namespace Arcas.Settings
             foreach (var asType in assemlys.SelectMany(x => x.Value.Item1.ExportedTypes).Where(x => x.IsSubclassOf(typeof(DbConnection))).ToArray())
             {
                 var dEl = assemlys.First(x => x.Value.Item1.FullName == asType.Assembly.FullName);
-                var item = new DbTypeItem();
-                item.ConType = asType;
-                item.AssembyRawBytes = dEl.Value.Item2;
+                var item = new DbTypeItem
+                {
+                    ConType = asType,
+                    AssembyRawBytes = dEl.Value.Item2
+                };
 
                 var bp = assemlys.Where(x => x.Key != dEl.Key).Select(x => x.Value.Item2).ToList();
                 item.LinkedAssembyRawBytes = bp;
@@ -410,9 +405,9 @@ namespace Arcas.Settings
 
         private void btChekConnection_Click(object sender, EventArgs e)
         {
-            DbTypeItem selitem = (DbTypeItem)cmbDbConectionType.SelectedItem;
+            var selitem = (DbTypeItem)cmbDbConectionType.SelectedItem;
 
-            String context = tbConnectionString.Text;
+            var context = tbConnectionString.Text;
 
             try
             {
@@ -430,15 +425,12 @@ namespace Arcas.Settings
             errorTracker.SetError(btChekConnection, null);
         }
 
-        private void tbNumberTask_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Char.IsDigit(e.KeyChar);
-        }
+        private void tbNumberTask_KeyPress(object sender, KeyPressEventArgs e) => e.Handled = !Char.IsDigit(e.KeyChar);
 
         private void createSettingUpdater_FormClosing(object sender, FormClosingEventArgs e)
         {
             if ((e.CloseReason != CloseReason.UserClosing & e.CloseReason != CloseReason.None) ||
-                this.DialogResult != DialogResult.OK)
+                DialogResult != DialogResult.OK)
                 return;
 
             if (errorTracker.Count != 0)
@@ -452,19 +444,18 @@ namespace Arcas.Settings
             }
 
             int? taskId = null;
-            int tid;
-            if (int.TryParse(tbNumberTask.Text, out tid))
+            if (int.TryParse(tbNumberTask.Text, out var tid))
                 taskId = tid;
 
             // формируем настройку для получения настроек
-            TfsDbLink newLink = editLink ?? new TfsDbLink();
+            var newLink = editLink ?? new TfsDbLink();
             newLink.Name = tbSettingName.Text;
             newLink.ServerUri = new Uri(tbTfsProject.Text);
             newLink.ServerPathToSettings = tbSetFileServerFolder.Text + "/" + tbFileNameSet.Text;
 
             var encodedSetting = dbSettingGet((DbTypeItem)cmbDbConectionType.SelectedItem).SerializeAesEncrypt(newLink.ServerPathToSettings);
 
-            string fileNameSet = tbFileNameSet.Text;
+            var fileNameSet = tbFileNameSet.Text;
 
             try
             {
@@ -495,18 +486,18 @@ namespace Arcas.Settings
                     if (!fileExist)
                         tfsbl.AddFile(localFileSetPath);
 
-                    List<int> linkedTask = new List<int>();
+                    var linkedTask = new List<int>();
                     if (taskId.HasValue)
                         linkedTask.Add(taskId.Value);
                     tfsbl.CheckIn("Добавленение настроек версионности", linkedTask);
                 }
 
                 if (editLink == null)
-                    this.ItemsInSets.Add(newLink);
+                    ItemsInSets.Add(newLink);
             }
             catch (Exception ex)
             {
-                String msg = ex.Expand();
+                var msg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     msg = ex.InnerException.Message;
                 Dialogs.ErrorF(this, "Сохранение неуспешно" + Environment.NewLine + msg);
@@ -514,10 +505,7 @@ namespace Arcas.Settings
             }
         }
 
-        private void tbConnectionString_TextChanged(object sender, EventArgs e)
-        {
-            tbConnectionString_Validating(null, null);
-        }
+        private void tbConnectionString_TextChanged(object sender, EventArgs e) => tbConnectionString_Validating(null, null);
 
         private void export_Click(object sender, EventArgs e)
         {

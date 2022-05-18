@@ -12,30 +12,18 @@ namespace Arcas.Settings
             : base(lfd)
         { }
 
-        public static implicit operator TFSDBList(List<TfsDbLink> lfd)
-        {
-            return new TFSDBList(lfd);
-        }
+        public static implicit operator TFSDBList(List<TfsDbLink> lfd) => new TFSDBList(lfd);
 
-        public static implicit operator List<TfsDbLink>(TFSDBList tdbl)
-        {
-            return new List<TfsDbLink>(tdbl);
-        }
+        public static implicit operator List<TfsDbLink>(TFSDBList tdbl) => new List<TfsDbLink>(tdbl);
     }
 
     #endregion
     public class VerDB
     {
-        public VerDB()
-        {
-            DateVersion = DateTime.Now;
-        }
         public long VersionBD { get; set; }
-        public DateTime DateVersion { get; set; }
-        public override string ToString()
-        {
-            return String.Format("{0} {1:yyyy-MM-dd}", VersionBD.ToString().PadLeft(6, '0'), DateVersion);
-        }
+        public DateTime DateVersion { get; set; } = DateTime.Now;
+        public override string ToString() =>
+            $"{VersionBD.ToString().PadLeft(6, '0')} {DateVersion:yyyy-MM-dd}";
 
         public static implicit operator String(VerDB ver)
         {

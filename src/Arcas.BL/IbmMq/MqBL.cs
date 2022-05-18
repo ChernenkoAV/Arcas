@@ -27,8 +27,10 @@ namespace Arcas.BL.IbmMq
         {
             chekSettings(sets);
 
-            MqMessageGeneric msg = new MqMessageGeneric();
-            msg.Body = body.GetNullIfIsNullOrWhiteSpace();
+            var msg = new MqMessageGeneric
+            {
+                Body = body.GetNullIfIsNullOrWhiteSpace()
+            };
             foreach (var item in propMessage)
                 msg.AddedProperties.Add(item.Key, item.Value);
 
@@ -38,7 +40,7 @@ namespace Arcas.BL.IbmMq
             var clnt = IBMMqClient.CreateClient(sets);
             clnt.Send(msg);
 
-            StringBuilder sb = new StringBuilder(msg.MessageID.Length * 2);
+            var sb = new StringBuilder(msg.MessageID.Length * 2);
             foreach (var b in msg.MessageID)
                 sb.AppendFormat("{0:X2}", b);
 

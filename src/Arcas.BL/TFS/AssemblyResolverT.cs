@@ -24,14 +24,25 @@ namespace Arcas.BL.TFS
             return Path.GetDirectoryName(pathTfsdll);
         }, LazyThreadSafetyMode.ExecutionAndPublication);
 
+        private static bool resolverAdded = false;
         public static void AddResolver()
         {
+            if (resolverAdded)
+                return;
+
             AppDomain.CurrentDomain.AssemblyResolve += currentDomain_AssemblyResolve;
+
+            resolverAdded = true;
         }
 
         public static void RemoveResolver()
         {
+            if (!resolverAdded)
+                return;
+
             AppDomain.CurrentDomain.AssemblyResolve -= currentDomain_AssemblyResolve;
+
+            resolverAdded = false;
         }
 
         private static Assembly currentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

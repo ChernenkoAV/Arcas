@@ -40,23 +40,27 @@ namespace Arcas.BL
             if (!msg.IsNullOrWhiteSpace())
                 return msg;
 
-            MetadataSet mdSet = new MetadataSet();
+            var mdSet = new MetadataSet();
             mdSet.MetadataSections.Add(MetadataSection.CreateFromServiceDescription(WebDescription.ServiceDescription.Read(pd.MainTempFile)));
 
             foreach (var item in pd.Imperts)
                 using (var xr = XmlReader.Create(item))
                     mdSet.MetadataSections.Add(MetadataSection.CreateFromSchema(XmlSchema.Read(xr, null)));
 
-            WsdlImporter importer = new WsdlImporter(mdSet);
+            var importer = new WsdlImporter(mdSet);
 
-            var xsdDCImporter = new XsdDataContractImporter();
-            xsdDCImporter.Options = new ImportOptions();
+            var xsdDCImporter = new XsdDataContractImporter
+            {
+                Options = new ImportOptions()
+            };
             xsdDCImporter.Options.Namespaces.Add("*", pd.TargetCSNamespace);
 
             importer.State.Add(typeof(XsdDataContractImporter), xsdDCImporter);
 
-            var xmlOptions = new XmlSerializerImportOptions();
-            xmlOptions.ClrNamespace = pd.TargetCSNamespace;
+            var xmlOptions = new XmlSerializerImportOptions
+            {
+                ClrNamespace = pd.TargetCSNamespace
+            };
             importer.State.Add(typeof(XmlSerializerImportOptions), xmlOptions);
 
             var generator = new ServiceContractGenerator();
@@ -79,7 +83,7 @@ namespace Arcas.BL
             if (generator.Errors.Count != 0)
                 return generator.Errors.Select(x => x.Message).JoinValuesToString(separator: Environment.NewLine);
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             using (var sw = new StringWriter(sb))
                 CodeDomProvider.CreateProvider("C#")
                     .GenerateCodeFromCompileUnit(
@@ -204,12 +208,12 @@ namespace Arcas.BL
             var res = new HashSet<string>();
             XNamespace xsdNS = "http://www.w3.org/2001/XMLSchema";
             XNamespace wsdlNS = "http://schemas.xmlsoap.org/wsdl/";
-            XDocument xdocfile = XDocument.Load(filePath);
+            var xdocfile = XDocument.Load(filePath);
             string sourceForTargetImport = null;
 
             Action<XAttribute, string> lartImp = (locationAttrib, fileintemp) =>
             {
-                Boolean importIsFile = true;
+                var importIsFile = true;
 
                 try
                 {
@@ -240,7 +244,7 @@ namespace Arcas.BL
                 {
                     try
                     {
-                        UriBuilder ub = new UriBuilder(sourseUri);
+                        var ub = new UriBuilder(sourseUri);
                         if (ub.Query == "?wsdl")
                             ub.Query = null;
 
@@ -251,8 +255,10 @@ namespace Arcas.BL
                     catch
                     {
                         // Бывает в Query
-                        UriBuilder ub = new UriBuilder(sourseUri);
-                        ub.Query = locationAttrib.Value;
+                        var ub = new UriBuilder(sourseUri)
+                        {
+                            Query = locationAttrib.Value
+                        };
                         httpDownloadFile(ub.Uri.PathAndQuery, fileintemp);
                     }
                 }

@@ -10,7 +10,7 @@ namespace Arcas.Controls
         public XsltTransform()
         {
             InitializeComponent();
-            this.Text = "Xslt - преобразование";
+            Text = "Xslt - преобразование";
 
             splitContainer1_DoubleClick(null, null);
             splitContainer2_DoubleClick(null, null);
@@ -18,22 +18,13 @@ namespace Arcas.Controls
 
         }
 
-        private void splitContainer1_DoubleClick(object sender, System.EventArgs e)
-        {
-            splitContainer1.SplitterDistance = splitContainer1.Width / 2;
-        }
+        private void splitContainer1_DoubleClick(object sender, EventArgs e) => splitContainer1.SplitterDistance = splitContainer1.Width / 2;
 
-        private void splitContainer2_DoubleClick(object sender, System.EventArgs e)
-        {
-            splitContainer2.SplitterDistance = splitContainer1.Height / 2;
-        }
+        private void splitContainer2_DoubleClick(object sender, EventArgs e) => splitContainer2.SplitterDistance = splitContainer1.Height / 2;
 
-        private void splitContainer3_DoubleClick(object sender, System.EventArgs e)
-        {
-            splitContainer3.SplitterDistance = splitContainer3.Height / 2;
-        }
+        private void splitContainer3_DoubleClick(object sender, EventArgs e) => splitContainer3.SplitterDistance = splitContainer3.Height / 2;
 
-        private void tbTransform_Click(object sender, System.EventArgs e)
+        private void tbTransform_Click(object sender, EventArgs e)
         {
             try
             {
@@ -49,15 +40,9 @@ namespace Arcas.Controls
             }
         }
 
-        private void btSourseXMLClear_Click(object sender, EventArgs e)
-        {
-            tbSourseXML.Text = null;
-        }
+        private void btSourseXMLClear_Click(object sender, EventArgs e) => tbSourseXML.Text = null;
 
-        private void btXsltTextClear_Click(object sender, EventArgs e)
-        {
-            tbXsltText.Text = null;
-        }
+        private void btXsltTextClear_Click(object sender, EventArgs e) => tbXsltText.Text = null;
 
         private void btSourseXMLFormat_Click(object sender, EventArgs e)
         {
