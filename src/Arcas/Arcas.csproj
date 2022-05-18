@@ -18,7 +18,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ApplicationVersion>0.0.2</ApplicationVersion>
+    <ApplicationVersion>0.0.3</ApplicationVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,10 +38,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="cav.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="gear_wheel.ico" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Launcher.cs" />

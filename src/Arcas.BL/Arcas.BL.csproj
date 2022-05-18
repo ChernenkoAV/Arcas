@@ -16,20 +16,18 @@
         <TargetFrameworkProfile />
         <NuGetPackageImportStamp>
         </NuGetPackageImportStamp>
+        <OutputPath>..\_Build\$(Configuration)\</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
-        <OutputPath>..\_Build\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <DebugType>pdbonly</DebugType>
         <Optimize>false</Optimize>
-        <OutputPath>..\_Build\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
@@ -43,13 +41,8 @@
     <ItemGroup>
         <PackageReference Include="Cav.Core" Version="7.3.6" />
         <PackageReference Include="Cav.WinForms" Version="4.0.1" />
-        <PackageReference Include="WebSphereMqClient" Version="8.0.0.7" ExcludeAssets="all" GeneratePathProperty="true" />
-        <PackageReference Include="Autoupdater.NET.Official"  Version="1.7.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <Reference Include="$(PkgWebSphereMqClient)\lib\net20\amqmdnet.dll">
-            <Private>true</Private>
-        </Reference>
+        <PackageReference Include="Autoupdater.NET.Official" Version="*" />
+        <PackageReference Include="IBMMQDotnetClient" Version="*" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="Microsoft.TeamFoundation.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -110,9 +103,6 @@
         <Compile Include="TFS\AssemblyResolverT.cs" />
         <Compile Include="TFS\TFSRoutine.cs" />
         <Compile Include="UpdaterT.cs" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Include="cav.snk" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
