@@ -1,1 +1,0 @@
-test clode depth 1 on clone and commit
