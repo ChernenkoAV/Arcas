@@ -13,11 +13,12 @@ namespace Arcas
         public ArcasMain()
         {
             InitializeComponent();
-#pragma warning disable CS0618 // Тип или член устарел
-            tsVersion.Text = Updater.CurrentVersion();
-#pragma warning restore CS0618 // Тип или член устарел
 
-            foreach (var tb in Locator.GetInstances<TabControlBase>())
+            Text = "Аркас " + Updater.CurrentVersion();
+
+            tabs.AddRange(Locator.GetInstances<TabControlBase>());
+
+            foreach (var tb in tabs)
             {
                 var ts = new TabPage();
 
@@ -25,26 +26,24 @@ namespace Arcas
                 ts.Name = tb.Name;
                 ts.Text = tb.Text;
                 ts.UseVisualStyleBackColor = true;
-                refreshTabAction.Add(tb.RefreshTab);
-                rcloseAppAction.Add(tb.CloseApp);
                 tb.StateProgress += savbl_StatusMessages;
                 tb.Dock = DockStyle.Fill;
                 tcTabs.TabPages.Add(ts);
             }
         }
 
-        private List<Action> refreshTabAction = new List<Action>();
-        private List<Action> rcloseAppAction = new List<Action>();
+        private List<TabControlBase> tabs = new List<TabControlBase>();
 
         private void выходToolStripMenuItem_Click(object sender, EventArgs e) =>
             Close();
 
-        private void tabPageDBVer_Enter(object sender, EventArgs e)
+        private void arcasMain_Load(object sender, EventArgs e)
         {
-            foreach (var item in refreshTabAction)
+            foreach (var item in tabs)
+            {
                 try
                 {
-                    item.Invoke();
+                    item.RefreshTab();
                 }
                 catch (Exception ex)
                 {
@@ -54,6 +53,7 @@ namespace Arcas
 
                     Dialogs.ErrorF(this, msg);
                 }
+            }
         }
 
         private void savbl_StatusMessages(string message)
@@ -64,12 +64,14 @@ namespace Arcas
 
         private void arcasMainMindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach (var closeTab in rcloseAppAction)
+            foreach (var item in tabs)
+            {
                 try
                 {
-                    closeTab();
+                    item.CloseApp();
                 }
                 catch { }
+            }
 
             Config.Instance.Save();
 
@@ -79,8 +81,5 @@ namespace Arcas
             }
             catch { }
         }
-
-        private void arcasMain_Load(object sender, EventArgs e) =>
-            tabPageDBVer_Enter(null, null);
     }
 }

@@ -48,10 +48,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbxTfsDbLinc = new System.Windows.Forms.ComboBox();
             this.btClear = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.panelScript = new System.Windows.Forms.Panel();
+            this.panelSettings = new System.Windows.Forms.Panel();
             this.btTfsDbLinkSettings = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.panelTfsWorkItems = new System.Windows.Forms.Panel();
             this.tbIdTask = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.bttvQueryRefresh = new System.Windows.Forms.Button();
@@ -65,10 +67,13 @@
             this.lbLinkedWirkItem = new System.Windows.Forms.ListBox();
             this.cmsLinkedWorkItems = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bwRequestTfs = new System.ComponentModel.BackgroundWorker();
             this.cmsScriptArea.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.panelScript.SuspendLayout();
+            this.panelSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.panelTfsWorkItems.SuspendLayout();
             this.cmsLinkedWorkItems.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,7 +82,7 @@
             this.chbTransaction.AutoSize = true;
             this.chbTransaction.Checked = true;
             this.chbTransaction.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chbTransaction.Location = new System.Drawing.Point(158, 32);
+            this.chbTransaction.Location = new System.Drawing.Point(158, 4);
             this.chbTransaction.Name = "chbTransaction";
             this.chbTransaction.Size = new System.Drawing.Size(159, 17);
             this.chbTransaction.TabIndex = 15;
@@ -87,7 +92,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 117);
+            this.label3.Location = new System.Drawing.Point(3, 86);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 14;
@@ -96,7 +101,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 36);
+            this.label2.Location = new System.Drawing.Point(3, 6);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(130, 13);
             this.label2.TabIndex = 13;
@@ -104,19 +109,19 @@
             // 
             // tbComment
             // 
-            this.tbComment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.tbComment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbComment.Location = new System.Drawing.Point(3, 52);
+            this.tbComment.Location = new System.Drawing.Point(3, 22);
             this.tbComment.Multiline = true;
             this.tbComment.Name = "tbComment";
             this.tbComment.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbComment.Size = new System.Drawing.Size(669, 50);
+            this.tbComment.Size = new System.Drawing.Size(663, 50);
             this.tbComment.TabIndex = 12;
             // 
             // btSaveScript
             // 
             this.btSaveScript.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btSaveScript.Location = new System.Drawing.Point(563, 560);
+            this.btSaveScript.Location = new System.Drawing.Point(557, 519);
             this.btSaveScript.Name = "btSaveScript";
             this.btSaveScript.Size = new System.Drawing.Size(109, 23);
             this.btSaveScript.TabIndex = 11;
@@ -126,16 +131,16 @@
             // 
             // rtbScriptBody
             // 
-            this.rtbScriptBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.rtbScriptBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbScriptBody.AutoWordSelection = true;
             this.rtbScriptBody.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rtbScriptBody.ContextMenuStrip = this.cmsScriptArea;
-            this.rtbScriptBody.Location = new System.Drawing.Point(3, 133);
+            this.rtbScriptBody.Location = new System.Drawing.Point(3, 102);
             this.rtbScriptBody.MaxLength = 0;
             this.rtbScriptBody.Name = "rtbScriptBody";
-            this.rtbScriptBody.Size = new System.Drawing.Size(669, 421);
+            this.rtbScriptBody.Size = new System.Drawing.Size(663, 410);
             this.rtbScriptBody.TabIndex = 10;
             this.rtbScriptBody.Text = "";
             this.rtbScriptBody.TextChanged += new System.EventHandler(this.tbScriptBody_TextChanged);
@@ -211,7 +216,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 8);
+            this.label1.Location = new System.Drawing.Point(7, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(85, 13);
             this.label1.TabIndex = 9;
@@ -222,7 +227,7 @@
             this.cbxTfsDbLinc.DisplayMember = "Name";
             this.cbxTfsDbLinc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxTfsDbLinc.FormattingEnabled = true;
-            this.cbxTfsDbLinc.Location = new System.Drawing.Point(94, 3);
+            this.cbxTfsDbLinc.Location = new System.Drawing.Point(98, 5);
             this.cbxTfsDbLinc.Name = "cbxTfsDbLinc";
             this.cbxTfsDbLinc.Size = new System.Drawing.Size(210, 21);
             this.cbxTfsDbLinc.TabIndex = 8;
@@ -231,7 +236,7 @@
             // btClear
             // 
             this.btClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btClear.Location = new System.Drawing.Point(532, 104);
+            this.btClear.Location = new System.Drawing.Point(526, 76);
             this.btClear.Name = "btClear";
             this.btClear.Size = new System.Drawing.Size(129, 23);
             this.btClear.TabIndex = 16;
@@ -239,28 +244,36 @@
             this.btClear.UseVisualStyleBackColor = true;
             this.btClear.Click += new System.EventHandler(this.btClear_Click);
             // 
-            // panel1
+            // panelScript
             // 
-            this.panel1.Controls.Add(this.btTfsDbLinkSettings);
-            this.panel1.Controls.Add(this.btClear);
-            this.panel1.Controls.Add(this.chbTransaction);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.tbComment);
-            this.panel1.Controls.Add(this.btSaveScript);
-            this.panel1.Controls.Add(this.rtbScriptBody);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.cbxTfsDbLinc);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.MinimumSize = new System.Drawing.Size(450, 300);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(675, 591);
-            this.panel1.TabIndex = 17;
+            this.panelScript.Controls.Add(this.btClear);
+            this.panelScript.Controls.Add(this.chbTransaction);
+            this.panelScript.Controls.Add(this.label3);
+            this.panelScript.Controls.Add(this.label2);
+            this.panelScript.Controls.Add(this.tbComment);
+            this.panelScript.Controls.Add(this.btSaveScript);
+            this.panelScript.Controls.Add(this.rtbScriptBody);
+            this.panelScript.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelScript.Location = new System.Drawing.Point(3, 38);
+            this.panelScript.MinimumSize = new System.Drawing.Size(450, 300);
+            this.panelScript.Name = "panelScript";
+            this.panelScript.Size = new System.Drawing.Size(669, 550);
+            this.panelScript.TabIndex = 17;
+            // 
+            // panelSettings
+            // 
+            this.panelSettings.Controls.Add(this.btTfsDbLinkSettings);
+            this.panelSettings.Controls.Add(this.label1);
+            this.panelSettings.Controls.Add(this.cbxTfsDbLinc);
+            this.panelSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelSettings.Location = new System.Drawing.Point(3, 3);
+            this.panelSettings.Name = "panelSettings";
+            this.panelSettings.Size = new System.Drawing.Size(669, 29);
+            this.panelSettings.TabIndex = 18;
             // 
             // btTfsDbLinkSettings
             // 
-            this.btTfsDbLinkSettings.Location = new System.Drawing.Point(310, 2);
+            this.btTfsDbLinkSettings.Location = new System.Drawing.Point(314, 4);
             this.btTfsDbLinkSettings.Name = "btTfsDbLinkSettings";
             this.btTfsDbLinkSettings.Size = new System.Drawing.Size(75, 23);
             this.btTfsDbLinkSettings.TabIndex = 17;
@@ -273,33 +286,49 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
-            this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.panelTfsWorkItems, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 597F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(931, 597);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
-            // panel2
+            // tableLayoutPanel2
             // 
-            this.panel2.Controls.Add(this.tbIdTask);
-            this.panel2.Controls.Add(this.label4);
-            this.panel2.Controls.Add(this.bttvQueryRefresh);
-            this.panel2.Controls.Add(this.tvQuerys);
-            this.panel2.Controls.Add(this.label6);
-            this.panel2.Controls.Add(this.lbWorkItems);
-            this.panel2.Controls.Add(this.btAddInIDTask);
-            this.panel2.Controls.Add(this.btAddWorkItem);
-            this.panel2.Controls.Add(this.label5);
-            this.panel2.Controls.Add(this.lbLinkedWirkItem);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(684, 3);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(244, 591);
-            this.panel2.TabIndex = 18;
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.panelSettings, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.panelScript, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(675, 591);
+            this.tableLayoutPanel2.TabIndex = 19;
+            // 
+            // panelTfsWorkItems
+            // 
+            this.panelTfsWorkItems.Controls.Add(this.tbIdTask);
+            this.panelTfsWorkItems.Controls.Add(this.label4);
+            this.panelTfsWorkItems.Controls.Add(this.bttvQueryRefresh);
+            this.panelTfsWorkItems.Controls.Add(this.tvQuerys);
+            this.panelTfsWorkItems.Controls.Add(this.label6);
+            this.panelTfsWorkItems.Controls.Add(this.lbWorkItems);
+            this.panelTfsWorkItems.Controls.Add(this.btAddInIDTask);
+            this.panelTfsWorkItems.Controls.Add(this.btAddWorkItem);
+            this.panelTfsWorkItems.Controls.Add(this.label5);
+            this.panelTfsWorkItems.Controls.Add(this.lbLinkedWirkItem);
+            this.panelTfsWorkItems.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelTfsWorkItems.Location = new System.Drawing.Point(684, 3);
+            this.panelTfsWorkItems.Name = "panelTfsWorkItems";
+            this.panelTfsWorkItems.Size = new System.Drawing.Size(244, 591);
+            this.panelTfsWorkItems.TabIndex = 18;
             // 
             // tbIdTask
             // 
@@ -399,14 +428,14 @@
             // 
             // lbLinkedWirkItem
             // 
-            this.lbLinkedWirkItem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.lbLinkedWirkItem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.lbLinkedWirkItem.FormattingEnabled = true;
             this.lbLinkedWirkItem.Location = new System.Drawing.Point(3, 410);
             this.lbLinkedWirkItem.Name = "lbLinkedWirkItem";
             this.lbLinkedWirkItem.ScrollAlwaysVisible = true;
             this.lbLinkedWirkItem.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.lbLinkedWirkItem.Size = new System.Drawing.Size(235, 173);
+            this.lbLinkedWirkItem.Size = new System.Drawing.Size(235, 160);
             this.lbLinkedWirkItem.TabIndex = 6;
             this.lbLinkedWirkItem.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lbLinkedWirkItem_KeyUp);
             this.lbLinkedWirkItem.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbLinkedWirkItem_MouseDown);
@@ -426,6 +455,13 @@
             this.deleteToolStripMenuItem.Text = "Удалить";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // bwRequestTfs
+            // 
+            this.bwRequestTfs.WorkerReportsProgress = true;
+            this.bwRequestTfs.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bwRequestTfs_DoWork);
+            this.bwRequestTfs.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_ProgressChanged);
+            this.bwRequestTfs.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bwRequestTfs_RunWorkerCompleted);
+            // 
             // UpdaterDB
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -434,11 +470,14 @@
             this.Name = "UpdaterDB";
             this.Size = new System.Drawing.Size(931, 597);
             this.cmsScriptArea.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.panelScript.ResumeLayout(false);
+            this.panelScript.PerformLayout();
+            this.panelSettings.ResumeLayout(false);
+            this.panelSettings.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.panelTfsWorkItems.ResumeLayout(false);
+            this.panelTfsWorkItems.PerformLayout();
             this.cmsLinkedWorkItems.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -455,9 +494,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbxTfsDbLinc;
         private System.Windows.Forms.Button btClear;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panelScript;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panelTfsWorkItems;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TreeView tvQuerys;
         private System.Windows.Forms.ImageList imageList1;
@@ -481,5 +520,8 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiTextSelectCute;
         private System.Windows.Forms.ToolStripMenuItem tsmiTextSelectDelete;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.Panel panelSettings;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.ComponentModel.BackgroundWorker bwRequestTfs;
     }
 }

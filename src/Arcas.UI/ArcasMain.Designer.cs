@@ -35,8 +35,6 @@
             this.tcTabs = new System.Windows.Forms.TabControl();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsProgressMessage = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsSplit = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -62,7 +60,7 @@
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
@@ -78,9 +76,7 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsProgressMessage,
-            this.tsSplit,
-            this.tsVersion});
+            this.tsProgressMessage});
             this.statusStrip1.Location = new System.Drawing.Point(0, 550);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(940, 22);
@@ -90,20 +86,6 @@
             // 
             this.tsProgressMessage.Name = "tsProgressMessage";
             this.tsProgressMessage.Size = new System.Drawing.Size(0, 17);
-            // 
-            // tsSplit
-            // 
-            this.tsSplit.Name = "tsSplit";
-            this.tsSplit.Size = new System.Drawing.Size(921, 17);
-            this.tsSplit.Spring = true;
-            // 
-            // tsVersion
-            // 
-            this.tsVersion.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-            this.tsVersion.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
-            this.tsVersion.Name = "tsVersion";
-            this.tsVersion.Size = new System.Drawing.Size(4, 17);
-            this.tsVersion.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // ArcasMain
             // 
@@ -118,7 +100,6 @@
             this.MinimumSize = new System.Drawing.Size(300, 300);
             this.Name = "ArcasMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Аркас";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.arcasMainMindow_FormClosing);
             this.Load += new System.EventHandler(this.arcasMain_Load);
             this.menuStrip1.ResumeLayout(false);
@@ -138,8 +119,6 @@
         private System.Windows.Forms.TabControl tcTabs;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tsProgressMessage;
-        private System.Windows.Forms.ToolStripStatusLabel tsVersion;
-        private System.Windows.Forms.ToolStripStatusLabel tsSplit;
     }
 }
 

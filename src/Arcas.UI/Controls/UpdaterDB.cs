@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -115,6 +116,7 @@ namespace Arcas.Controls
         {
             tbComment.Text = null;
             rtbScriptBody.Text = null;
+            lbLinkedWirkItem.Items.Clear();
         }
 
         private void bttvQueryRefresh_Click(object sender, EventArgs e)
@@ -308,44 +310,13 @@ namespace Arcas.Controls
         {
             btSaveScript.Enabled = false;
             formatbin = null;
+            panelScript.Enabled = false;
+            panelTfsWorkItems.Enabled = false;
 
             if (cbxTfsDbLinc.SelectedItem is TfsDbLink curset)
-            {
                 if (!curset.ServerPathToSettings.IsNullOrWhiteSpace() & curset.ServerUri != null)
-                {
-                    String tempfile = null;
-                    try
-                    {
-                        // Проверяем доступность TFS
-                        // подгружаем настройку бинарныго формата
-                        using (var tfsbl = new TfsRoutineBL(curset.ServerUri))
-                        {
-                            tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
-                            tfsbl.DownloadFile(curset.ServerPathToSettings, tempfile);
-                            var upsets = File.ReadAllBytes(tempfile).DeserializeAesDecrypt<UpdateDbSetting>(curset.ServerPathToSettings);
-                            formatbin = upsets.FormatBinary;
-                        }
-
-                        btSaveScript.Enabled = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        var exMsg = ex.Expand();
-                        if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
-                            exMsg = ex.InnerException.Message;
-                        Dialogs.ErrorF(this, exMsg);
-                    }
-                    finally
-                    {
-                        if (!tempfile.IsNullOrWhiteSpace() && File.Exists(tempfile))
-                            File.Delete(tempfile);
-                    }
-                }
-
-                Config.Instance.UpdaterDb.SelestedTFSDB = curset.Name;
-            }
-
-            bttvQueryRefresh_Click(null, null);
+                    if (!bwRequestTfs.IsBusy)
+                        bwRequestTfs.RunWorkerAsync(curset);
         }
 
         private void tsmiClearScriptText_Click(object sender, EventArgs e) =>
@@ -353,7 +324,7 @@ namespace Arcas.Controls
 
         private int posCurscript = 0;
 
-        private void cmsScriptArea_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void cmsScriptArea_Opening(object sender, CancelEventArgs e)
         {
             tsmiClearScriptText.Enabled = !rtbScriptBody.Text.IsNullOrWhiteSpace();
             tsmiTextSelectDelete.Enabled =
@@ -449,5 +420,68 @@ namespace Arcas.Controls
             if (e.KeyCode == Keys.Enter)
                 btAddInIDTask_Click(null, null);
         }
+
+        private void bwRequestTfs_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var curset = (TfsDbLink)e.Argument;
+
+            string tempfile = null;
+            try
+            {
+
+                // Проверяем доступность TFS
+                // подгружаем настройку бинарныго формата
+                bwRequestTfs.ReportProgress(0, $"Проверка настроек TFS '{curset.Name}'");
+
+                using (var tfsbl = new TfsRoutineBL(curset.ServerUri))
+                {
+                    tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
+                    tfsbl.DownloadFile(curset.ServerPathToSettings, tempfile);
+                    var upsets = File.ReadAllBytes(tempfile).DeserializeAesDecrypt<UpdateDbSetting>(curset.ServerPathToSettings);
+                    e.Result = Tuple.Create(curset.Name, upsets.FormatBinary);
+                }
+            }
+            catch (Exception ex)
+            {
+                e.Result = ex;
+            }
+            finally
+            {
+                if (!tempfile.IsNullOrWhiteSpace() && File.Exists(tempfile))
+                    File.Delete(tempfile);
+            }
+        }
+
+        private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e) =>
+            savbl_StatusMessages((string)e.UserState);
+
+        private void bwRequestTfs_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            savbl_StatusMessages(null);
+
+            if (e.Result is Exception ex)
+            {
+                var exMsg = ex.Expand();
+                if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
+                    exMsg = ex.InnerException.Message;
+
+                Dialogs.ErrorF(this, exMsg);
+
+                return;
+            }
+
+            var res = (Tuple<String, FormatBinaryData>)e.Result;
+
+            Config.Instance.UpdaterDb.SelestedTFSDB = res.Item1;
+            formatbin = res.Item2;
+
+            btSaveScript.Enabled = true;
+
+            bttvQueryRefresh_Click(null, null);
+
+            panelTfsWorkItems.Enabled =
+            panelScript.Enabled = true;
+        }
+
     }
 }
