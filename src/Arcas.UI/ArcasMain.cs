@@ -51,7 +51,7 @@ namespace Arcas
                     if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                         msg = ex.InnerException.Message;
 
-                    Dialogs.ErrorF(this, msg);
+                    Dialogs.Error(this, msg);
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace Arcas
 
             try
             {
-                Utils.DeleteDirectory(DomainContext.TempPath);
+                DomainContext.TempPath.DeleteDirectory();
             }
             catch { }
         }

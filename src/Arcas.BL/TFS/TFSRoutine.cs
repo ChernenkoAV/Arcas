@@ -58,7 +58,7 @@ namespace Arcas.BL.TFS
         {
             // чистим папку
             if (Directory.Exists(Tempdir))
-                Utils.DeleteDirectory(Tempdir);
+                Tempdir.DeleteDirectory();
 
             Directory.CreateDirectory(Tempdir);
 
@@ -248,7 +248,7 @@ namespace Arcas.BL.TFS
                 }
 
                 if (Directory.Exists(Tempdir))
-                    Utils.DeleteDirectory(Tempdir);
+                    Tempdir.DeleteDirectory();
             }
             catch
             {
@@ -407,10 +407,7 @@ namespace Arcas.BL.TFS
             var tscs = tpc.GetService<TeamSettingsConfigurationService>();
             var team = tscs.GetTeamConfigurationsForUser(new[] { prject.Uri }).FirstOrDefault();
 
-            var query = wis.GetQueryDefinition(queryitem.QueryID.Value);
-
-            if (query == null)
-                throw new ArgumentOutOfRangeException("Не найден запрос с именем " + queryitem.Name);
+            var query = wis.GetQueryDefinition(queryitem.QueryID.Value) ?? throw new ArgumentOutOfRangeException("Не найден запрос с именем " + queryitem.Name);
 
             var queryText = query.QueryText;
 

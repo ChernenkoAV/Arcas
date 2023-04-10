@@ -328,12 +328,12 @@ namespace Arcas.Settings
             }
 
             var filePathAssembly = Dialogs.FileBrowser(
-                    Owner: this,
-                    Title: "Выбор сборки с реализацией DbConnection + зависимые",
-                    DefaultExt: ".ddl",
-                    Filter: "Assemblys dll|*.dll",
-                    AddExtension: false,
-                    Multiselect: true);
+                    owner: this,
+                    title: "Выбор сборки с реализацией DbConnection + зависимые",
+                    defaultExt: ".ddl",
+                    filter: "Assemblys dll|*.dll",
+                    addExtension: false,
+                    multiselect: true);
 
             if (!filePathAssembly.Any())
             {
@@ -370,30 +370,39 @@ namespace Arcas.Settings
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, ex.Expand());
+                Dialogs.Error(this, ex.Expand());
                 cmbDbConectionType.SelectedIndex = 0;
                 return;
             }
 
-            foreach (var asType in assemlys.SelectMany(x => x.Value.Item1.ExportedTypes).Where(x => x.IsSubclassOf(typeof(DbConnection))).ToArray())
+            try
             {
-                var dEl = assemlys.First(x => x.Value.Item1.FullName == asType.Assembly.FullName);
-                var item = new DbTypeItem
+
+                foreach (var asType in assemlys.SelectMany(x => x.Value.Item1.ExportedTypes).Where(x => x.IsSubclassOf(typeof(DbConnection))).ToArray())
                 {
-                    ConType = asType,
-                    AssembyRawBytes = dEl.Value.Item2
-                };
+                    var dEl = assemlys.First(x => x.Value.Item1.FullName == asType.Assembly.FullName);
+                    var item = new DbTypeItem
+                    {
+                        ConType = asType,
+                        AssembyRawBytes = dEl.Value.Item2
+                    };
 
-                var bp = assemlys.Where(x => x.Key != dEl.Key).Select(x => x.Value.Item2).ToList();
-                item.LinkedAssembyRawBytes = bp;
+                    var bp = assemlys.Where(x => x.Key != dEl.Key).Select(x => x.Value.Item2).ToList();
+                    item.LinkedAssembyRawBytes = bp;
 
-                item.AssembyNameFile = dEl.Value.Item1.GetName();
-                cmbDbConectionType.Items.Insert(cmbDbConectionType.Items.Count - 1, item);
-                cmbDbConectionType.SelectedItem = item;
+                    item.AssembyNameFile = dEl.Value.Item1.GetName();
+                    cmbDbConectionType.Items.Insert(cmbDbConectionType.Items.Count - 1, item);
+                    cmbDbConectionType.SelectedItem = item;
+                }
+
+                if (cmbDbConectionType.SelectedItem == selItem)
+                    cmbDbConectionType.SelectedIndex = 0;
+
             }
-
-            if (cmbDbConectionType.SelectedItem == selItem)
-                cmbDbConectionType.SelectedIndex = 0;
+            catch (Exception ex)
+            {
+                Dialogs.Error(this, ex.Expand());
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -411,13 +420,13 @@ namespace Arcas.Settings
 
             try
             {
-                DomainContext.InitConnection(selitem.ConType, context);
+                DbContext.InitConnection(selitem.ConType, context);
 
-                Dialogs.InformationF(this, "Тест соединения успешен.");
+                Dialogs.Information(this, "Тест соединения успешен.");
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, ex.Expand());
+                Dialogs.Error(this, ex.Expand());
                 errorTracker.SetError(btChekConnection, "Проверка строки соединения неуспешна");
                 return;
             }
@@ -435,7 +444,7 @@ namespace Arcas.Settings
 
             if (errorTracker.Count != 0)
             {
-                Dialogs.ErrorF(this, errorTracker.ToString());
+                Dialogs.Error(this, errorTracker.ToString());
                 e.Cancel = true;
 
                 if (editLink != null)
@@ -500,7 +509,7 @@ namespace Arcas.Settings
                 var msg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     msg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, "Сохранение неуспешно" + Environment.NewLine + msg);
+                Dialogs.Error(this, "Сохранение неуспешно" + Environment.NewLine + msg);
                 e.Cancel = true;
             }
         }
@@ -511,7 +520,7 @@ namespace Arcas.Settings
         {
             try
             {
-                var expFile = Dialogs.SaveFile(Owner: this, FileName: "rollUpDb.xml");
+                var expFile = Dialogs.SaveFile(owner: this, fileName: "rollUpDb.xml");
 
                 if (expFile.IsNullOrWhiteSpace())
                     return;
@@ -523,7 +532,7 @@ namespace Arcas.Settings
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, "Экспорт неуспешен " + ex.Expand());
+                Dialogs.Error(this, "Экспорт неуспешен " + ex.Expand());
                 return;
             }
         }
@@ -532,7 +541,7 @@ namespace Arcas.Settings
         {
             try
             {
-                var expFile = Dialogs.FileBrowser(Owner: this, FileName: "rollUpDb.xml").FirstOrDefault();
+                var expFile = Dialogs.FileBrowser(owner: this, fileName: "rollUpDb.xml").FirstOrDefault();
 
                 if (expFile.IsNullOrWhiteSpace())
                     return;
@@ -544,7 +553,7 @@ namespace Arcas.Settings
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, "Импорт неуспешен: " + ex.Expand());
+                Dialogs.Error(this, "Импорт неуспешен: " + ex.Expand());
                 return;
             }
         }

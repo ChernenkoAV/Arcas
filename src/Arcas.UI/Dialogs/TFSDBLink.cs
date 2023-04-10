@@ -12,9 +12,6 @@ namespace Arcas.Settings
     {
         public TFSDBLinkForm()
         {
-            if (Config.Instance.UpdaterDb.TfsDbSets == null || !Config.Instance.UpdaterDb.TfsDbSets.Any())
-                Config.Instance.UpdaterDb.TfsDbSets = Config.Instance.TfsDbSets;
-
             links = Config.Instance.UpdaterDb.TfsDbSets ?? new List<TfsDbLink>();
 
             InitializeComponent();
@@ -64,7 +61,7 @@ namespace Arcas.Settings
             }
             catch (Exception ex)
             {
-                Dialogs.InformationF(this, ex.Message);
+                Dialogs.Information(this, ex.Message);
                 return;
             }
 
@@ -120,7 +117,7 @@ namespace Arcas.Settings
             {
                 if (tdbli.ServerUri == null)
                 {
-                    Dialogs.ErrorF(this, "Необходимо выбрать проект");
+                    Dialogs.Error(this, "Необходимо выбрать проект");
                     return;
                 }
 
@@ -160,7 +157,7 @@ namespace Arcas.Settings
                 }
                 catch (Exception ex)
                 {
-                    Dialogs.ErrorF(this, "Открыть для редактирования невозможно: " + ex.Expand());
+                    Dialogs.Error(this, "Открыть для редактирования невозможно: " + ex.Expand());
                     return;
                 }
             }

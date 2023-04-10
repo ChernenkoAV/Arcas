@@ -30,7 +30,7 @@ namespace Arcas.Update
 
         public static string CurrentVersion() =>
             Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
-            DomainContext.CurrentVersion.ToString();
+            Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         public static void UpdateFromGitHub(
             string user,

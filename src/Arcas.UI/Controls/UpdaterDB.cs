@@ -25,7 +25,7 @@ namespace Arcas.Controls
         private void btSaveScript_Click(object sender, EventArgs e)
         {
             if (!textChanged)
-                if (!Dialogs.QuestionOKCancelF(this, "Текст скрипта не изменился с предыдущего запуска. Повторить?"))
+                if (!Dialogs.QuestionOKCancel(this, "Текст скрипта не изменился с предыдущего запуска. Повторить?"))
                     return;
 
             String msg = null;
@@ -38,7 +38,7 @@ namespace Arcas.Controls
             try
             {
                 if (savbl.ChekExistsShelveset((TfsDbLink)cbxTfsDbLinc.SelectedItem) &&
-                    Dialogs.QuestionOKCancelF(this, "В шельве присутствуют несохраненные изменения. Удалить?"))
+                    Dialogs.QuestionOKCancel(this, "В шельве присутствуют несохраненные изменения. Удалить?"))
                     savbl.DeleteShelveset((TfsDbLink)cbxTfsDbLinc.SelectedItem);
             }
             catch (Exception ex)
@@ -58,9 +58,9 @@ namespace Arcas.Controls
                     chbTransaction.Checked,
                     taskIds);
             if (msg.IsNullOrWhiteSpace())
-                Dialogs.InformationF(this, "Успешно");
+                Dialogs.Information(this, "Успешно");
             else
-                Dialogs.ErrorF(this, msg);
+                Dialogs.Error(this, msg);
 
             textChanged = false;
             btSaveScript.Enabled = true;
@@ -93,12 +93,10 @@ namespace Arcas.Controls
             if (Config.Instance.UpdaterDb == null)
                 Config.Instance.UpdaterDb = new UpdaterDbSetting();
 
-            var selName = Config.Instance.UpdaterDb.SelestedTFSDB ?? Config.Instance.SelestedTFSDB;
+            var selName = Config.Instance.UpdaterDb.SelestedTFSDB;
 
-            if (Config.Instance.UpdaterDb.TfsDbSets == null || !Config.Instance.UpdaterDb.TfsDbSets.Any())
-                Config.Instance.UpdaterDb.TfsDbSets = Config.Instance.TfsDbSets;
-            cbxTfsDbLinc.DataSource = Config.Instance.UpdaterDb.TfsDbSets
-            ;
+            cbxTfsDbLinc.DataSource = Config.Instance.UpdaterDb.TfsDbSets;
+
             if (cbxTfsDbLinc.DataSource != null)
                 cbxTfsDbLinc.SelectedItem = ((List<TfsDbLink>)cbxTfsDbLinc.DataSource).FirstOrDefault(x => x.Name == selName);
             if (cbxTfsDbLinc.SelectedItem == null && cbxTfsDbLinc.Items.Count > 0)
@@ -165,7 +163,7 @@ namespace Arcas.Controls
                 var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, exMsg);
+                Dialogs.Error(this, exMsg);
             }
         }
 
@@ -180,7 +178,7 @@ namespace Arcas.Controls
 
                 if (curset.ServerUri == null)
                 {
-                    Dialogs.InformationF(this, "В настройках связки не указан сервер TFS");
+                    Dialogs.Information(this, "В настройках связки не указан сервер TFS");
                     return;
                 }
 
@@ -198,7 +196,7 @@ namespace Arcas.Controls
                 var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, exMsg);
+                Dialogs.Error(this, exMsg);
             }
         }
 
@@ -244,7 +242,7 @@ namespace Arcas.Controls
 
                     if (curset.ServerUri == null)
                     {
-                        Dialogs.InformationF(this, "В настройках связки не указан сервер TFS");
+                        Dialogs.Information(this, "В настройках связки не указан сервер TFS");
                         return;
                     }
 
@@ -260,7 +258,7 @@ namespace Arcas.Controls
                 var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, exMsg);
+                Dialogs.Error(this, exMsg);
             }
         }
 
@@ -348,7 +346,7 @@ namespace Arcas.Controls
                 String binstr = null;
 
                 var filePath = Dialogs.FileBrowser(this,
-                    Title: "Выбор файла для бинарного представления"
+                    title: "Выбор файла для бинарного представления"
                     ).FirstOrDefault();
 
                 if (filePath.IsNullOrWhiteSpace())
@@ -359,7 +357,7 @@ namespace Arcas.Controls
 
                 if (new FileInfo(filePath).Length > (1024 * 1024))
                 {
-                    Dialogs.ErrorF(this, "Файлы более 1 мегабайта нельзя обрабатывать");
+                    Dialogs.Error(this, "Файлы более 1 мегабайта нельзя обрабатывать");
                     return;
                 }
 
@@ -375,7 +373,7 @@ namespace Arcas.Controls
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, ex.Expand());
+                Dialogs.Error(this, ex.Expand());
             }
         }
 
@@ -465,7 +463,7 @@ namespace Arcas.Controls
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
 
-                Dialogs.ErrorF(this, exMsg);
+                Dialogs.Error(this, exMsg);
 
                 return;
             }
@@ -482,6 +480,5 @@ namespace Arcas.Controls
             panelTfsWorkItems.Enabled =
             panelScript.Enabled = true;
         }
-
     }
 }

@@ -12,7 +12,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using Cav;
-using Cav.DynamicCode;
 using WebDescription = System.Web.Services.Description;
 
 namespace Arcas.BL
@@ -127,7 +126,7 @@ namespace Arcas.BL
             var tempPath = Path.Combine(DomainContext.TempPath, uri.ComputeMD5ChecksumString().ToString());
 
             if (Directory.Exists(tempPath))
-                Utils.DeleteDirectory(tempPath);
+                tempPath.DeleteDirectory();
 
             Directory.CreateDirectory(tempPath);
 
@@ -279,10 +278,7 @@ namespace Arcas.BL
             string importName;
             foreach (var item in xdocfile.Descendants(xsdNS + "import"))
             {
-                var locationAttrib = item.Attribute("schemaLocation");
-
-                if (locationAttrib == null)
-                    throw new ArgumentException($"Отсутствует атрибут schemaLocation в элементе {item.Name}");
+                var locationAttrib = item.Attribute("schemaLocation") ?? throw new ArgumentException($"Отсутствует атрибут schemaLocation в элементе {item.Name}");
 
                 if (locationAttrib.Value.IsNullOrWhiteSpace())
                     throw new ArgumentException($"Не заполнен атрибут schemaLocation в элементе {item.Name}");
@@ -299,10 +295,7 @@ namespace Arcas.BL
 
             foreach (var item in xdocfile.Descendants(wsdlNS + "import").ToArray())
             {
-                var locationAttrib = item.Attribute("location");
-
-                if (locationAttrib == null)
-                    throw new ArgumentException($"Отсутствует атрибут location в элементе {item.Name}");
+                var locationAttrib = item.Attribute("location") ?? throw new ArgumentException($"Отсутствует атрибут location в элементе {item.Name}");
 
                 if (locationAttrib.Value.IsNullOrWhiteSpace())
                     throw new ArgumentException($"Не заполнен атрибут location в элементе {item.Name}");

@@ -30,10 +30,10 @@ namespace Arcas.Controls
         private void btFromFile_Click(object sender, EventArgs e)
         {
             var pathfile = Dialogs.FileBrowser(
-                 Owner: this,
-                 Title: "Файл с WSDL",
-                 Filter: "*.wsdl|*.wsdl",
-                 RestoreDirectory: true).FirstOrDefault();
+                 owner: this,
+                 title: "Файл с WSDL",
+                 filter: "*.wsdl|*.wsdl",
+                 restoreDirectory: true).FirstOrDefault();
 
             if (pathfile.IsNullOrWhiteSpace())
                 return;
@@ -44,12 +44,12 @@ namespace Arcas.Controls
         private void btSelFileForSave_Click(object sender, EventArgs e)
         {
             var pathfile = Dialogs.SaveFile(
-                Owner: this,
-                Title: "Сохранить код в файл",
-                Filter: "C# файл| *.cs",
-                FileName: tbSaveWsdlTo.Text.GetNullIfIsNullOrWhiteSpace(),
-                DefaultExt: "cs",
-                RestoreDirectory: true);
+                owner: this,
+                title: "Сохранить код в файл",
+                filter: "C# файл| *.cs",
+                fileName: tbSaveWsdlTo.Text.GetNullIfIsNullOrWhiteSpace(),
+                defaultExt: "cs",
+                restoreDirectory: true);
 
             if (pathfile.IsNullOrWhiteSpace())
                 return;
@@ -85,16 +85,16 @@ namespace Arcas.Controls
                     generateClient: rbGenClient.Checked);
 
                 if (!msg.IsNullOrWhiteSpace())
-                    Dialogs.ErrorF(this, msg);
+                    Dialogs.Error(this, msg);
                 else
                 {
-                    if (Dialogs.QuestionOKCancelF(this, "Готово. Открыть файл?"))
+                    if (Dialogs.QuestionOKCancel(this, "Готово. Открыть файл?"))
                         Process.Start(tbSaveWsdlTo.Text);
                 }
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, ex.Expand());
+                Dialogs.Error(this, ex.Expand());
             }
         }
 
@@ -112,28 +112,28 @@ namespace Arcas.Controls
                     outputFile: tbSaveXsdTo.Text);
 
                 if (!msg.IsNullOrWhiteSpace())
-                    Dialogs.ErrorF(this, msg);
+                    Dialogs.Error(this, msg);
                 else
                 {
-                    if (Dialogs.QuestionOKCancelF(this, "Готово. Открыть файл?"))
+                    if (Dialogs.QuestionOKCancel(this, "Готово. Открыть файл?"))
                         Process.Start(tbSaveXsdTo.Text);
                 }
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, ex.Expand());
+                Dialogs.Error(this, ex.Expand());
             }
         }
 
         private void btSelFileForSaveXsd_Click(object sender, EventArgs e)
         {
             var pathfile = Dialogs.SaveFile(
-                   Owner: this,
-                   Title: "Сохранить код в файл",
-                   Filter: "C# файл| *.cs",
-                   FileName: tbSaveXsdTo.Text.GetNullIfIsNullOrWhiteSpace(),
-                   DefaultExt: "cs",
-                   RestoreDirectory: true);
+                   owner: this,
+                   title: "Сохранить код в файл",
+                   filter: "C# файл| *.cs",
+                   fileName: tbSaveXsdTo.Text.GetNullIfIsNullOrWhiteSpace(),
+                   defaultExt: "cs",
+                   restoreDirectory: true);
 
             if (pathfile.IsNullOrWhiteSpace())
                 return;
@@ -144,10 +144,10 @@ namespace Arcas.Controls
         private void btSetXsdFile_Click(object sender, EventArgs e)
         {
             var pathfile = Dialogs.FileBrowser(
-                    Owner: this,
-                    Title: "Файл с XSD",
-                    Filter: "*.xsd|*.xsd",
-                    RestoreDirectory: true).FirstOrDefault();
+                    owner: this,
+                    title: "Файл с XSD",
+                    filter: "*.xsd|*.xsd",
+                    restoreDirectory: true).FirstOrDefault();
 
             if (pathfile.IsNullOrWhiteSpace())
                 return;

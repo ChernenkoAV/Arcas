@@ -58,7 +58,7 @@ namespace Arcas.BL
         /// <param name="tdlink">Настройка связки TFS-DB</param>
         /// <param name="sqlScript">Тело скрипта</param>
         /// <param name="comment">Комментарий к заливке</param>
-        /// <returns></returns>        
+        /// <returns></returns>
         public String SaveScript(
             TfsDbLink tdlink,
             String sqlScript,
@@ -180,7 +180,7 @@ namespace Arcas.BL
                         return $"В шельве присутствуют несохраненные изменения";
 
                     sendStat("Подключаемся к БД");
-                    DomainContext.InitConnection(conn, upsets.ConnectionStringModelDb);
+                    DbContext.InitConnection(conn, upsets.ConnectionStringModelDb);
 
                     tfsbl.MapTempWorkspace(upsets.ServerPathScripts);
 
@@ -278,7 +278,7 @@ namespace Arcas.BL
                         if (tran != null)
                         {
                             tran.Complete();
-                            ((IDisposable)tran).Dispose();
+                            tran.Dispose();
                             tran = null;
                         }
 
@@ -299,8 +299,7 @@ namespace Arcas.BL
                     }
                     finally
                     {
-                        if (tran != null)
-                            ((IDisposable)tran).Dispose();
+                        tran?.Dispose();
                     }
                 }
 

@@ -18,7 +18,7 @@
         <Prefer32Bit>false</Prefer32Bit>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
-        <ApplicationVersion>0.0.4</ApplicationVersion>
+        <ApplicationVersion>0.0.5</ApplicationVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>

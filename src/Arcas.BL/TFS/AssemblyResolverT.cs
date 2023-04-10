@@ -17,6 +17,14 @@ namespace Arcas.BL.TFS
                 .ToList();
 
             if (!teDirs.Any())
+            {
+                vsdirs = Directory.EnumerateDirectories(@"C:\Program Files", "Microsoft Visual Studi*", SearchOption.TopDirectoryOnly).ToList();
+                teDirs = vsdirs
+                .SelectMany(x => Directory.GetFiles(x, "Microsoft.TeamFoundation.VersionControl.Controls.dll", SearchOption.AllDirectories))
+                .ToList();
+            }
+
+            if (!teDirs.Any())
                 throw new InvalidOperationException("Не найдено расширение 'Team Explorer' в Visual Studio");
 
             var pathTfsdll = teDirs.OrderBy(x => x).Last();
