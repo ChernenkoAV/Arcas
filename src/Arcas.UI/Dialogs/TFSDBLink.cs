@@ -12,12 +12,14 @@ namespace Arcas.Settings
     {
         public TFSDBLinkForm()
         {
+            links = Config.Instance.UpdaterDb.TfsDbSets ?? new List<TfsDbLink>();
+
             InitializeComponent();
             dgvTFSDB.AutoGenerateColumns = false;
-            dgvTFSDB.DataSource = link;
+            dgvTFSDB.DataSource = links;
         }
 
-        private TFSDBList link = Config.Instance.TfsDbSets ?? new List<TfsDbLink>();
+        private TFSDBList links;
 
         private void btAdd_Click(object sender, EventArgs e)
         {
@@ -33,16 +35,16 @@ namespace Arcas.Settings
                     return;
                 }
 
-                if (link.Any(x => x.Name == nl.Name))
+                if (links.Any(x => x.Name == nl.Name))
                     MessageBox.Show(this, "Наименование должно быть уникальным");
 
-            } while (link.Any(x => x.Name == nl.Name));
+            } while (links.Any(x => x.Name == nl.Name));
 
             nl.ServerUri = TfsRoutineBL.ShowTeamProjectPicker(this);
 
             selFileOnServer(nl);
 
-            link.Add(nl);
+            links.Add(nl);
 
             dgvTFSDB.Update();
         }
@@ -59,7 +61,7 @@ namespace Arcas.Settings
             }
             catch (Exception ex)
             {
-                Dialogs.InformationF(this, ex.Message);
+                Dialogs.Information(this, ex.Message);
                 return;
             }
 
@@ -76,7 +78,7 @@ namespace Arcas.Settings
                 if (item.DataBoundItem == null)
                     continue;
 
-                link.Remove((TfsDbLink)item.DataBoundItem);
+                links.Remove((TfsDbLink)item.DataBoundItem);
             }
         }
 
@@ -88,7 +90,7 @@ namespace Arcas.Settings
                 return;
             if (dgvTFSDB.SelectedRows.Count == 0)
                 return;
-            var tdbli = (TfsDbLink)((DataGridViewRow)dgvTFSDB.SelectedRows[0]).DataBoundItem;
+            var tdbli = (TfsDbLink)dgvTFSDB.SelectedRows[0].DataBoundItem;
 
             if (e.ColumnIndex == 0)
             {
@@ -115,7 +117,7 @@ namespace Arcas.Settings
             {
                 if (tdbli.ServerUri == null)
                 {
-                    Dialogs.ErrorF(this, "Необходимо выбрать проект");
+                    Dialogs.Error(this, "Необходимо выбрать проект");
                     return;
                 }
 
@@ -125,10 +127,10 @@ namespace Arcas.Settings
 
         private void tFSDBLinkForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (this.DialogResult != DialogResult.OK)
+            if (DialogResult != DialogResult.OK)
                 return;
 
-            Config.Instance.TfsDbSets = link;
+            Config.Instance.UpdaterDb.TfsDbSets = links;
             Config.Instance.Save();
         }
 
@@ -140,8 +142,10 @@ namespace Arcas.Settings
             if (!(e.KeyCode == Keys.C || e.KeyCode == Keys.E))
                 return;
 
-            var crSet = new CreateSettingUpdater();
-            crSet.ItemsInSets = link;
+            var crSet = new CreateSettingUpdater
+            {
+                ItemsInSets = links
+            };
 
             if (e.KeyCode == Keys.E)
             {
@@ -153,7 +157,7 @@ namespace Arcas.Settings
                 }
                 catch (Exception ex)
                 {
-                    Dialogs.ErrorF(this, "Открыть для редактирования невозможно: " + ex.Expand());
+                    Dialogs.Error(this, "Открыть для редактирования невозможно: " + ex.Expand());
                     return;
                 }
             }

@@ -11,6 +11,9 @@ namespace Arcas
         [STAThread]
         public static void Main()
         {
+            AppContext.SetSwitch("Switch.System.Security.Cryptography.Xml.UseInsecureHashAlgorithms", true);
+            AppContext.SetSwitch("Switch.System.Security.Cryptography.Pkcs.UseInsecureHashAlgorithms", true);
+
             Updater.UpdateApp();
 
             System.Windows.Forms.Application.EnableVisualStyles();

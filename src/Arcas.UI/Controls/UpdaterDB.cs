@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -15,16 +16,16 @@ namespace Arcas.Controls
         public UpdaterDB()
         {
             InitializeComponent();
-            this.Text = "Накатка БД";
+            Text = "Накатка БД";
         }
 
-        Boolean textChanged = true;
-        FormatBinaryData formatbin = null;
+        private Boolean textChanged = true;
+        private FormatBinaryData formatbin = null;
 
         private void btSaveScript_Click(object sender, EventArgs e)
         {
             if (!textChanged)
-                if (!Dialogs.QuestionOKCancelF(this, "Текст скрипта не изменился с предыдущего запуска. Повторить?"))
+                if (!Dialogs.QuestionOKCancel(this, "Текст скрипта не изменился с предыдущего запуска. Повторить?"))
                     return;
 
             String msg = null;
@@ -37,7 +38,7 @@ namespace Arcas.Controls
             try
             {
                 if (savbl.ChekExistsShelveset((TfsDbLink)cbxTfsDbLinc.SelectedItem) &&
-                    Dialogs.QuestionOKCancelF(this, "В шельве присутствуют несохраненные изменения. Удалить?"))
+                    Dialogs.QuestionOKCancel(this, "В шельве присутствуют несохраненные изменения. Удалить?"))
                     savbl.DeleteShelveset((TfsDbLink)cbxTfsDbLinc.SelectedItem);
             }
             catch (Exception ex)
@@ -47,38 +48,64 @@ namespace Arcas.Controls
                     msg = ex.InnerException.Message;
             }
 
+            var taskIds = lbLinkedWirkItem.Items.Cast<Lwi>().Select(x => x.ID).ToList();
+
             if (msg.IsNullOrWhiteSpace())
                 msg = savbl.SaveScript(
                     (TfsDbLink)cbxTfsDbLinc.SelectedItem,
                     rtbScriptBody.Text,
                     tbComment.Text,
                     chbTransaction.Checked,
-                    lbLinkedWirkItem.Items.Cast<Lwi>().Select(x => x.ID).ToList());
+                    taskIds);
             if (msg.IsNullOrWhiteSpace())
-                Dialogs.InformationF(this, "Успешно");
+                Dialogs.Information(this, "Успешно");
             else
-                Dialogs.ErrorF(this, msg);
+                Dialogs.Error(this, msg);
 
             textChanged = false;
             btSaveScript.Enabled = true;
             savbl_StatusMessages(String.Empty);
-            Config.Instance.SelestedTFSDB = cbxTfsDbLinc.Text;
+
+            Config.Instance.UpdaterDb.SelestedTFSDB = cbxTfsDbLinc.Text;
+            Config.Instance.UpdaterDb.Comment = tbComment.Text;
+            Config.Instance.UpdaterDb.Script = rtbScriptBody.Text;
+            Config.Instance.UpdaterDb.Tasks = taskIds;
+            Config.Instance.Save();
+
             Cursor.Current = Cursors.Default;
         }
 
-        private void savbl_StatusMessages(string message)
+        private void savbl_StatusMessages(string message) =>
+            SetSateProgress(message);
+
+        public override void CloseApp()
         {
-            this.SetSateProgress(message);
+            Config.Instance.UpdaterDb.SelestedTFSDB = cbxTfsDbLinc.Text;
+            Config.Instance.UpdaterDb.Comment = tbComment.Text;
+            Config.Instance.UpdaterDb.Script = rtbScriptBody.Text;
+            Config.Instance.UpdaterDb.Tasks = lbLinkedWirkItem.Items.Cast<Lwi>().Select(x => x.ID).ToList();
         }
 
         public override void RefreshTab()
         {
-            var selName = Config.Instance.SelestedTFSDB;
-            cbxTfsDbLinc.DataSource = Config.Instance.TfsDbSets;
+            AssemblyResolver.AddResolver();
+
+            if (Config.Instance.UpdaterDb == null)
+                Config.Instance.UpdaterDb = new UpdaterDbSetting();
+
+            var selName = Config.Instance.UpdaterDb.SelestedTFSDB;
+
+            cbxTfsDbLinc.DataSource = Config.Instance.UpdaterDb.TfsDbSets;
+
             if (cbxTfsDbLinc.DataSource != null)
                 cbxTfsDbLinc.SelectedItem = ((List<TfsDbLink>)cbxTfsDbLinc.DataSource).FirstOrDefault(x => x.Name == selName);
             if (cbxTfsDbLinc.SelectedItem == null && cbxTfsDbLinc.Items.Count > 0)
                 cbxTfsDbLinc.SelectedIndex = 0;
+
+            tbComment.Text = Config.Instance.UpdaterDb.Comment;
+            rtbScriptBody.Text = Config.Instance.UpdaterDb.Script;
+
+            addTaskOnIds(Config.Instance.UpdaterDb.Tasks);
 
             cbxTfsDbLinc_SelectionChangeCommitted(null, null);
         }
@@ -87,6 +114,7 @@ namespace Arcas.Controls
         {
             tbComment.Text = null;
             rtbScriptBody.Text = null;
+            lbLinkedWirkItem.Items.Clear();
         }
 
         private void bttvQueryRefresh_Click(object sender, EventArgs e)
@@ -95,9 +123,7 @@ namespace Arcas.Controls
             {
                 tvQuerys.Nodes.Clear();
 
-                TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-
-                if (curset == null || curset.ServerUri == null || curset.ServerPathToSettings.IsNullOrWhiteSpace())
+                if (!(cbxTfsDbLinc.SelectedItem is TfsDbLink curset) || curset.ServerUri == null || curset.ServerPathToSettings.IsNullOrWhiteSpace())
                 {
                     bttvQueryRefresh.Enabled = false;
                     return;
@@ -134,10 +160,10 @@ namespace Arcas.Controls
             }
             catch (Exception ex)
             {
-                String exMsg = ex.Expand();
+                var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, exMsg);
+                Dialogs.Error(this, exMsg);
             }
         }
 
@@ -147,17 +173,16 @@ namespace Arcas.Controls
             {
                 lbWorkItems.Items.Clear();
 
-                TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-                if (curset == null)
+                if (!(cbxTfsDbLinc.SelectedItem is TfsDbLink curset))
                     return;
 
                 if (curset.ServerUri == null)
                 {
-                    Dialogs.InformationF(this, "В настройках связки не указан сервер TFS");
+                    Dialogs.Information(this, "В настройках связки не указан сервер TFS");
                     return;
                 }
 
-                QueryItemNode qin = (QueryItemNode)e.Node.Tag;
+                var qin = (QueryItemNode)e.Node.Tag;
 
                 if (qin.IsFolder)
                     return;
@@ -168,27 +193,26 @@ namespace Arcas.Controls
             }
             catch (Exception ex)
             {
-                String exMsg = ex.Expand();
+                var exMsg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     exMsg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, exMsg);
+                Dialogs.Error(this, exMsg);
             }
         }
-        class Lwi
+
+        private class Lwi
         {
             public int ID { get; set; }
             public String Title { get; set; }
-            public override string ToString()
-            {
-                return $"({ID}) {Title}";
-            }
+            public override string ToString() =>
+                $"({ID}) {Title}";
         }
 
         private void btAddWorkItem_Click(object sender, EventArgs e)
         {
             foreach (Lwi item in lbWorkItems.SelectedItems)
             {
-                Lwi si = (Lwi)item;
+                var si = item;
 
                 if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == si.ID))
                     continue;
@@ -198,47 +222,54 @@ namespace Arcas.Controls
             lbWorkItems.SelectedItems.Clear();
         }
 
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e) =>
+            e.Handled = !char.IsDigit(e.KeyChar);
+
+        private void addTaskOnIds(IEnumerable<int> taskIds)
         {
-            e.Handled = !Char.IsDigit(e.KeyChar);
+            if (taskIds == null)
+                return;
+
+            try
+            {
+                if (!(cbxTfsDbLinc.SelectedItem is TfsDbLink curset))
+                    return;
+
+                foreach (var tskId in taskIds)
+                {
+                    if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == tskId))
+                        continue;
+
+                    if (curset.ServerUri == null)
+                    {
+                        Dialogs.Information(this, "В настройках связки не указан сервер TFS");
+                        return;
+                    }
+
+                    var title = TfsRoutineBL.TitleWorkItemByIdGet(curset.ServerUri, tskId);
+                    if (title.IsNullOrWhiteSpace())
+                        return;
+
+                    lbLinkedWirkItem.Items.Add(new Lwi() { ID = tskId, Title = title });
+                }
+            }
+            catch (Exception ex)
+            {
+                var exMsg = ex.Expand();
+                if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
+                    exMsg = ex.InnerException.Message;
+                Dialogs.Error(this, exMsg);
+            }
         }
 
         private void btAddInIDTask_Click(object sender, EventArgs e)
         {
-            try
-            {
-                int idTask;
-                if (!int.TryParse(tbIdTask.Text, out idTask))
-                    return;
+            if (!int.TryParse(tbIdTask.Text, out var idTask))
+                return;
 
-                if (lbLinkedWirkItem.Items.Cast<Lwi>().Any(x => x.ID == idTask))
-                    return;
+            addTaskOnIds(new[] { idTask });
 
-                TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-                if (curset == null)
-                    return;
-
-                if (curset.ServerUri == null)
-                {
-                    Dialogs.InformationF(this, "В настройках связки не указан сервер TFS");
-                    return;
-                }
-
-                var title = TfsRoutineBL.TitleWorkItemByIdGet(curset.ServerUri, idTask);
-                if (title.IsNullOrWhiteSpace())
-                    return;
-
-                lbLinkedWirkItem.Items.Add(new Lwi() { ID = idTask, Title = title });
-
-                tbIdTask.Text = null;
-            }
-            catch (Exception ex)
-            {
-                String exMsg = ex.Expand();
-                if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
-                    exMsg = ex.InnerException.Message;
-                Dialogs.ErrorF(this, exMsg);
-            }
+            tbIdTask.Text = null;
         }
 
         private void lbLinkedWirkItem_KeyUp(object sender, KeyEventArgs e)
@@ -267,68 +298,31 @@ namespace Arcas.Controls
         private void btTfsDbLinkSettings_Click(object sender, EventArgs e)
         {
             new TFSDBLinkForm().ShowDialog(this);
-            this.RefreshTab();
+            RefreshTab();
         }
 
-        private void tbScriptBody_TextChanged(object sender, EventArgs e)
-        {
+        private void tbScriptBody_TextChanged(object sender, EventArgs e) =>
             textChanged = true;
-        }
 
         private void cbxTfsDbLinc_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            TfsDbLink curset = cbxTfsDbLinc.SelectedItem as TfsDbLink;
-
-            this.btSaveScript.Enabled = false;
+            btSaveScript.Enabled = false;
             formatbin = null;
+            panelScript.Enabled = false;
+            panelTfsWorkItems.Enabled = false;
 
-            if (curset != null)
-            {
+            if (cbxTfsDbLinc.SelectedItem is TfsDbLink curset)
                 if (!curset.ServerPathToSettings.IsNullOrWhiteSpace() & curset.ServerUri != null)
-                {
-                    String tempfile = null;
-                    try
-                    {
-                        // Проверяем доступность TFS
-                        // подгружаем настройку бинарныго формата
-                        using (var tfsbl = new TfsRoutineBL(curset.ServerUri))
-                        {
-                            tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
-                            tfsbl.DownloadFile(curset.ServerPathToSettings, tempfile);
-                            var upsets = File.ReadAllBytes(tempfile).DeserializeAesDecrypt<UpdateDbSetting>(curset.ServerPathToSettings);
-                            formatbin = upsets.FormatBinary;
-                        }
-
-                        this.btSaveScript.Enabled = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        String exMsg = ex.Expand();
-                        if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
-                            exMsg = ex.InnerException.Message;
-                        Dialogs.ErrorF(this, exMsg);
-                    }
-                    finally
-                    {
-                        if (!tempfile.IsNullOrWhiteSpace() && File.Exists(tempfile))
-                            File.Delete(tempfile);
-                    }
-                }
-
-                Config.Instance.SelestedTFSDB = curset.Name;
-            }
-
-            bttvQueryRefresh_Click(null, null);
+                    if (!bwRequestTfs.IsBusy)
+                        bwRequestTfs.RunWorkerAsync(curset);
         }
 
-        private void tsmiClearScriptText_Click(object sender, EventArgs e)
-        {
+        private void tsmiClearScriptText_Click(object sender, EventArgs e) =>
             rtbScriptBody.Text = null;
-        }
 
-        int posCurscript = 0;
+        private int posCurscript = 0;
 
-        private void cmsScriptArea_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void cmsScriptArea_Opening(object sender, CancelEventArgs e)
         {
             tsmiClearScriptText.Enabled = !rtbScriptBody.Text.IsNullOrWhiteSpace();
             tsmiTextSelectDelete.Enabled =
@@ -352,7 +346,7 @@ namespace Arcas.Controls
                 String binstr = null;
 
                 var filePath = Dialogs.FileBrowser(this,
-                    Title: "Выбор файла для бинарного представления"
+                    title: "Выбор файла для бинарного представления"
                     ).FirstOrDefault();
 
                 if (filePath.IsNullOrWhiteSpace())
@@ -363,7 +357,7 @@ namespace Arcas.Controls
 
                 if (new FileInfo(filePath).Length > (1024 * 1024))
                 {
-                    Dialogs.ErrorF(this, "Файлы более 1 мегабайта нельзя обрабатывать");
+                    Dialogs.Error(this, "Файлы более 1 мегабайта нельзя обрабатывать");
                     return;
                 }
 
@@ -379,14 +373,12 @@ namespace Arcas.Controls
             }
             catch (Exception ex)
             {
-                Dialogs.ErrorF(this, ex.Expand());
+                Dialogs.Error(this, ex.Expand());
             }
         }
 
-        private void tsmiCopySelect_Click(object sender, EventArgs e)
-        {
+        private void tsmiCopySelect_Click(object sender, EventArgs e) =>
             Clipboard.SetText(rtbScriptBody.SelectedText, TextDataFormat.UnicodeText);
-        }
 
         private void tsmiPaste_Click(object sender, EventArgs e)
         {
@@ -415,10 +407,8 @@ namespace Arcas.Controls
             rtbScriptBody.ScrollToCaret();
         }
 
-        private void rtbScriptBody_MouseDown(object sender, MouseEventArgs e)
-        {
+        private void rtbScriptBody_MouseDown(object sender, MouseEventArgs e) =>
             rtbScriptBody.Focus();
-        }
 
         private void tbIdTask_KeyDown(object sender, KeyEventArgs e)
         {
@@ -427,6 +417,68 @@ namespace Arcas.Controls
 
             if (e.KeyCode == Keys.Enter)
                 btAddInIDTask_Click(null, null);
+        }
+
+        private void bwRequestTfs_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var curset = (TfsDbLink)e.Argument;
+
+            string tempfile = null;
+            try
+            {
+
+                // Проверяем доступность TFS
+                // подгружаем настройку бинарныго формата
+                bwRequestTfs.ReportProgress(0, $"Проверка настроек TFS '{curset.Name}'");
+
+                using (var tfsbl = new TfsRoutineBL(curset.ServerUri))
+                {
+                    tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
+                    tfsbl.DownloadFile(curset.ServerPathToSettings, tempfile);
+                    var upsets = File.ReadAllBytes(tempfile).DeserializeAesDecrypt<UpdateDbSetting>(curset.ServerPathToSettings);
+                    e.Result = Tuple.Create(curset.Name, upsets.FormatBinary);
+                }
+            }
+            catch (Exception ex)
+            {
+                e.Result = ex;
+            }
+            finally
+            {
+                if (!tempfile.IsNullOrWhiteSpace() && File.Exists(tempfile))
+                    File.Delete(tempfile);
+            }
+        }
+
+        private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e) =>
+            savbl_StatusMessages((string)e.UserState);
+
+        private void bwRequestTfs_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            savbl_StatusMessages(null);
+
+            if (e.Result is Exception ex)
+            {
+                var exMsg = ex.Expand();
+                if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
+                    exMsg = ex.InnerException.Message;
+
+                Dialogs.Error(this, exMsg);
+
+                return;
+            }
+
+            var res = (Tuple<String, FormatBinaryData>)e.Result;
+
+            Config.Instance.UpdaterDb.SelestedTFSDB = res.Item1;
+            formatbin = res.Item2;
+
+            btSaveScript.Enabled = true;
+
+            bttvQueryRefresh_Click(null, null);
+
+            panelTfsWorkItems.Enabled =
+            panelScript.Enabled = true;
         }
     }
 }

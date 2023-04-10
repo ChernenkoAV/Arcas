@@ -18,12 +18,9 @@ namespace Arcas.BL
     public class TfsDBSaveBL
     {
         public event ProgressStateDelegat StatusMessages;
-        private void sendStat(string mess)
-        {
-            StatusMessages?.Invoke(mess);
-        }
+        private void sendStat(string mess) => StatusMessages?.Invoke(mess);
 
-        Adapter adapter = new Adapter();
+        private Adapter adapter = new Adapter();
 
         /// <summary>
         /// Проверка данных в шельве
@@ -33,7 +30,7 @@ namespace Arcas.BL
         public Boolean ChekExistsShelveset(TfsDbLink tdlink)
         {
             sendStat("Проверка несохраненных данных в шельве");
-            using (TfsRoutineBL tfsbl = new TfsRoutineBL(tdlink.ServerUri))
+            using (var tfsbl = new TfsRoutineBL(tdlink.ServerUri))
                 return tfsbl.ExistsShelveset();
         }
 
@@ -45,7 +42,7 @@ namespace Arcas.BL
         public void DeleteShelveset(TfsDbLink tdlink)
         {
             sendStat("Проверка несохраненных данных в шельве");
-            using (TfsRoutineBL tfsbl = new TfsRoutineBL(tdlink.ServerUri))
+            using (var tfsbl = new TfsRoutineBL(tdlink.ServerUri))
             {
                 if (!tfsbl.ExistsShelveset())
                     return;
@@ -61,7 +58,7 @@ namespace Arcas.BL
         /// <param name="tdlink">Настройка связки TFS-DB</param>
         /// <param name="sqlScript">Тело скрипта</param>
         /// <param name="comment">Комментарий к заливке</param>
-        /// <returns></returns>        
+        /// <returns></returns>
         public String SaveScript(
             TfsDbLink tdlink,
             String sqlScript,
@@ -90,7 +87,7 @@ namespace Arcas.BL
 
                     var colStr = a.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
-                    for (int i = 0; i < colStr.Length; i++)
+                    for (var i = 0; i < colStr.Length; i++)
                         colStr[i] = colStr[i].TrimEnd();
 
                     return colStr.JoinValuesToString(Environment.NewLine, false);
@@ -103,10 +100,10 @@ namespace Arcas.BL
                 var commentforSQL = "--" + comment.Replace(Environment.NewLine, Environment.NewLine + "--") + Environment.NewLine;
 
                 UpdateDbSetting upsets = null;
-                bool useSqlConnection = false;
+                var useSqlConnection = false;
 
                 sendStat("Подключаемся к TFS");
-                using (TfsRoutineBL tfsbl = new TfsRoutineBL(tdlink.ServerUri))
+                using (var tfsbl = new TfsRoutineBL(tdlink.ServerUri))
                 {
                     sendStat("Получение настроек поднятия версии.");
                     var tempfile = Path.Combine(DomainContext.TempPath, Guid.NewGuid().ToString());
@@ -118,7 +115,7 @@ namespace Arcas.BL
                     }
                     catch (Exception ex)
                     {
-                        String msg = ex.Expand();
+                        var msg = ex.Expand();
                         if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                             msg = ex.InnerException.Message;
                         return "Получение файла настроек неуспешно. Exception: " + msg;
@@ -131,7 +128,7 @@ namespace Arcas.BL
 
                     sendStat("Получение типа соединения");
 
-                    Type conn = typeof(SqlConnection);
+                    var conn = typeof(SqlConnection);
                     useSqlConnection = true;
 
                     if (upsets.TypeConnectionFullName != conn.ToString())
@@ -183,7 +180,7 @@ namespace Arcas.BL
                         return $"В шельве присутствуют несохраненные изменения";
 
                     sendStat("Подключаемся к БД");
-                    DomainContext.InitConnection(conn, upsets.ConnectionStringModelDb);
+                    DbContext.InitConnection(conn, upsets.ConnectionStringModelDb);
 
                     tfsbl.MapTempWorkspace(upsets.ServerPathScripts);
 
@@ -192,8 +189,8 @@ namespace Arcas.BL
 
                     sendStat("Обработка файла версионности");
 
-                    String verFileName = "_lastVer.xml";
-                    String pathVerFile = Path.Combine(tfsbl.Tempdir, verFileName);
+                    var verFileName = "_lastVer.xml";
+                    var pathVerFile = Path.Combine(tfsbl.Tempdir, verFileName);
 
                     if (tfsbl.GetLastFile(verFileName) == 0)
                     {
@@ -218,7 +215,7 @@ namespace Arcas.BL
                     curVerDB.VersionBD += 1;
                     curVerDB.DateVersion = new DateTimeOffset(DateTime.Now).DateTime;
 
-                    List<String> scts = new List<string>();
+                    var scts = new List<string>();
 
                     if (useSqlConnection)
                         scts.AddRange(splitSqlTExtOnGO(sqlScript));
@@ -268,7 +265,7 @@ namespace Arcas.BL
                         if (inTaransaction)
                             sb.Append(upsets.ScriptPartAfterBodyWithTran);
 
-                        String fileNameNewVer = Path.Combine(tfsbl.Tempdir, curVerDB + ".sql");
+                        var fileNameNewVer = Path.Combine(tfsbl.Tempdir, curVerDB + ".sql");
 
                         File.WriteAllText(fileNameNewVer, sb.ToString());
                         curVerDB.XMLSerialize(pathVerFile);
@@ -281,7 +278,7 @@ namespace Arcas.BL
                         if (tran != null)
                         {
                             tran.Complete();
-                            ((IDisposable)tran).Dispose();
+                            tran.Dispose();
                             tran = null;
                         }
 
@@ -302,8 +299,7 @@ namespace Arcas.BL
                     }
                     finally
                     {
-                        if (tran != null)
-                            ((IDisposable)tran).Dispose();
+                        tran?.Dispose();
                     }
                 }
 
@@ -311,7 +307,7 @@ namespace Arcas.BL
             }
             catch (Exception ex)
             {
-                String msg = ex.Expand();
+                var msg = ex.Expand();
                 if (ex.GetType().Name == "TargetInvocationException" && ex.InnerException != null)
                     msg = ex.InnerException.Message;
                 return msg;
@@ -326,7 +322,7 @@ namespace Arcas.BL
         private Boolean checkSqlScriptOnUSE(String sqlText)
         {
             // убираем строчные комментарии
-            Regex regex = new Regex("--.*", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            var regex = new Regex("--.*", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             sqlText = regex.Replace(sqlText, Environment.NewLine);
 
             // убираем многострочные коммантарии
@@ -349,14 +345,14 @@ namespace Arcas.BL
         /// <returns></returns>
         private List<String> splitSqlTExtOnGO(String sqlText)
         {
-            string separator = @"!@#$%^&*()";
+            var separator = @"!@#$%^&*()";
             // убираем строчные комментарии
-            Regex regex = new Regex(@"(\n|\r|\n\r|^)\s*GO\s*(\n\r|\n|\r|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+            var regex = new Regex(@"(\n|\r|\n\r|^)\s*GO\s*(\n\r|\n|\r|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
             sqlText = regex.Replace(sqlText, separator);
 
             var res = new List<String>(sqlText.Split(new string[] { separator }, StringSplitOptions.None));
 
-            res.RemoveAll(new Predicate<string>((a) => { return a == String.Empty; }));
+            res.RemoveAll(new Predicate<string>(a => a == String.Empty));
 
             return res;
         }
@@ -366,7 +362,7 @@ namespace Arcas.BL
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Проверка запросов SQL на уязвимости безопасности")]
             public void ExecScript(String sqlText)
             {
-                var cmd = this.CreateCommandObject();
+                var cmd = CreateCommandObject();
                 cmd.CommandText = sqlText;
                 cmd.CommandTimeout = (int)TimeSpan.FromMinutes(5).TotalSeconds;
                 ExecuteNonQuery(cmd);

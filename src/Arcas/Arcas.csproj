@@ -1,115 +1,122 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{90E2CF7D-4929-4C50-A11F-140152EEE4E3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Arcas</RootNamespace>
-    <AssemblyName>Arcas</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <OutputPath>..\_Build\$(Configuration)\</OutputPath>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ApplicationVersion>0.0.1-dev</ApplicationVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <ApplicationVersion>0.0.1</ApplicationVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>..\gear_wheel.ico</ApplicationIcon>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="cav.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="gear_wheel.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Launcher.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Arcas.BL\Arcas.BL.csproj">
-      <Project>{B4E45987-D126-40AB-A6EC-2B1DFB0B5F73}</Project>
-      <Name>Arcas.BL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Arcas.UI\Arcas.UI.csproj">
-      <Project>{dc1b475c-b6d8-49a5-8bba-3b9730e4a6d2}</Project>
-      <Name>Arcas.UI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
-  <Target Name="BeforeCompile">
-
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
     <PropertyGroup>
-      <ApplicationVersion Condition=" $(ApplicationVersion) == ''">$([System.DateTime]::Now.Year).$([System.DateTime]::Today.ToString("MMdd")).$([System.DateTime]::Now.Hour).$([System.DateTime]::Now.Minute)</ApplicationVersion>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{90E2CF7D-4929-4C50-A11F-140152EEE4E3}</ProjectGuid>
+        <OutputType>WinExe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Arcas</RootNamespace>
+        <AssemblyName>Arcas</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+        <RestorePackages>true</RestorePackages>
+        <OutputPath>..\_Build\$(Configuration)\</OutputPath>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <Prefer32Bit>false</Prefer32Bit>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ApplicationVersion>0.0.5</ApplicationVersion>
     </PropertyGroup>
-
-    <Message Text="------- Application version $(ApplicationVersion)" Importance="High" />
-
-    <Error Condition="'$(ApplicationVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
-    <PropertyGroup Condition=" '$(ApplicationVersion.Split(`.`)[0])' == '0' ">
-      <VerAssembly>0.1.0.0</VerAssembly>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ApplicationVersion>$(ApplicationVersion)-dev</ApplicationVersion>
     </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(ApplicationVersion.Split(`.`)[0])' != '0' ">
-      <VerAssembly>$(ApplicationVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
-
     <PropertyGroup>
-      <VerFile>$(VerAssembly.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
+        <ApplicationIcon>..\gear_wheel.ico</ApplicationIcon>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
-
     <ItemGroup>
-      <AssemblyAttributes Include="AssemblyVersion">
-        <_Parameter1>$(VerAssembly)</_Parameter1>
-      </AssemblyAttributes>
-      <AssemblyAttributes Include="AssemblyFileVersion">
-        <_Parameter1>$(VerFile)</_Parameter1>
-      </AssemblyAttributes>
-      <AssemblyAttributes Include="AssemblyInformationalVersion">
-        <_Parameter1>$(ApplicationVersion)</_Parameter1>
-      </AssemblyAttributes>
+        <None Include="app.config" />
     </ItemGroup>
-
-    <WriteCodeFragment Language="C#" OutputFile="$(BaseIntermediateOutputPath)/AssemblyVer.cs" AssemblyAttributes="@(AssemblyAttributes)" />
-
     <ItemGroup>
-      <Compile Include="$(BaseIntermediateOutputPath)/AssemblyVer.cs" />
+        <Compile Include="Launcher.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Windows.Forms" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Arcas.BL\Arcas.BL.csproj">
+            <Project>{B4E45987-D126-40AB-A6EC-2B1DFB0B5F73}</Project>
+            <Name>Arcas.BL</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\Arcas.UI\Arcas.UI.csproj">
+            <Project>{dc1b475c-b6d8-49a5-8bba-3b9730e4a6d2}</Project>
+            <Name>Arcas.UI</Name>
+        </ProjectReference>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 
-  </Target>
+    <Target Name="BeforeCompile">
+
+        <PropertyGroup>
+            <ApplicationVersion Condition=" $(ApplicationVersion) == ''">$([System.DateTime]::Now.Year).$([System.DateTime]::Today.ToString("MMdd")).$([System.DateTime]::Now.Hour).$([System.DateTime]::Now.Minute)</ApplicationVersion>
+        </PropertyGroup>
+
+        <Message Text="------- Application version $(ApplicationVersion)" Importance="High" />
+
+        <Error Condition="'$(ApplicationVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
+        <PropertyGroup Condition=" '$(ApplicationVersion.Split(`.`)[0])' == '0' ">
+            <VerAssembly>0.1.0.0</VerAssembly>
+        </PropertyGroup>
+
+        <PropertyGroup Condition=" '$(ApplicationVersion.Split(`.`)[0])' != '0' ">
+            <VerAssembly>$(ApplicationVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
+        </PropertyGroup>
+
+        <PropertyGroup>
+            <VerFile>$(VerAssembly.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <AssemblyAttributes Include="AssemblyVersion">
+                <_Parameter1>$(VerAssembly)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyFileVersion">
+                <_Parameter1>$(VerFile)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyInformationalVersion">
+                <_Parameter1>$(ApplicationVersion)</_Parameter1>
+            </AssemblyAttributes>
+        </ItemGroup>
+
+        <WriteCodeFragment Language="C#" OutputFile="$(BaseIntermediateOutputPath)/AssemblyVer.cs" AssemblyAttributes="@(AssemblyAttributes)" />
+
+        <ItemGroup>
+            <Compile Include="$(BaseIntermediateOutputPath)/AssemblyVer.cs" />
+        </ItemGroup>
+
+    </Target>
 
     <Target Name="ZippedOutput" AfterTargets="Build">
-        <Message Text="------- Zipped" Importance="High" />
+        <ItemGroup Condition="'$(Configuration)' != 'Release'">
+            <ResFiles Include="$(OutputPath)*.*" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(Configuration)' == 'Release'">
+            <ResFiles Include="$(OutputPath)*.*" Exclude="**\*.pdb"/>
+        </ItemGroup>
+        <PropertyGroup>
+            <ZippedDir>$(OutputPath)..\zipDir</ZippedDir>
+        </PropertyGroup>
 
+        <Message Text="------- Zipped" Importance="High" />
+        <RemoveDir Directories="$(ZippedDir)"/>
+        <Copy SourceFiles="@(ResFiles)" DestinationFolder="$(ZippedDir)" />
         <ZipDirectory
-          SourceDirectory="$(OutputPath)"
-          DestinationFile="$(OutputPath)\..\$(AssemblyName).zip"
+          SourceDirectory="$(ZippedDir)"
+          DestinationFile="$(OutputPath)\..\$(AssemblyName)_$(ApplicationVersion).zip"
           Overwrite="true"/>
     </Target>
 

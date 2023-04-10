@@ -58,7 +58,7 @@ namespace Arcas.BL.TFS
         {
             // чистим папку
             if (Directory.Exists(Tempdir))
-                Utils.DeleteDirectory(Tempdir);
+                Tempdir.DeleteDirectory();
 
             Directory.CreateDirectory(Tempdir);
 
@@ -84,10 +84,12 @@ namespace Arcas.BL.TFS
             if (tempWorkspace != null)
                 return tempWorkspace;
 
-            var cwp = new CreateWorkspaceParameters(Guid.NewGuid().ToString());
-            cwp.Comment = arcasWorkspaceName;
-            cwp.OwnerName = vcs.TeamProjectCollection.AuthorizedIdentity.UniqueName;
-            cwp.Location = WorkspaceLocation.Server;
+            var cwp = new CreateWorkspaceParameters(Guid.NewGuid().ToString())
+            {
+                Comment = arcasWorkspaceName,
+                OwnerName = vcs.TeamProjectCollection.AuthorizedIdentity.UniqueName,
+                Location = WorkspaceLocation.Server
+            };
 
             tempWorkspace = vcs.CreateWorkspace(cwp);
 
@@ -200,10 +202,8 @@ namespace Arcas.BL.TFS
         /// </summary>
         /// <param name="pathFileName">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
         /// <returns>true - успешно, false - неуспешно</returns>
-        public bool CheckOut(string pathFileName)
-        {
-            return getTempWorkspace().PendEdit(pathFileName) != 0;
-        }
+        public bool CheckOut(string pathFileName) =>
+            getTempWorkspace().PendEdit(pathFileName) != 0;
 
         public bool ExistsShelveset() => vcs.QueryShelvesets(arcasShelveName, RepositoryConstants.AuthenticatedUser).Any();
 
@@ -222,13 +222,15 @@ namespace Arcas.BL.TFS
 
             var vcs = ws.VersionControlServer;
 
-            var newShelveset = new Shelveset(vcs, arcasShelveName, RepositoryConstants.AuthenticatedUser);
-            newShelveset.Comment = comment;
-            newShelveset.WorkItemInfo = linkedTask
+            var newShelveset = new Shelveset(vcs, arcasShelveName, RepositoryConstants.AuthenticatedUser)
+            {
+                Comment = comment,
+                WorkItemInfo = linkedTask
                 .Select(x => new WorkItemCheckinInfo(
                     vcs.TeamProjectCollection.GetService<WorkItemStore>().GetWorkItem(x),
                     WorkItemCheckinAction.Associate))
-                .ToArray();
+                .ToArray()
+            };
 
             ws.Shelve(newShelveset, pcs, ShelvingOptions.None);
         }
@@ -246,7 +248,7 @@ namespace Arcas.BL.TFS
                 }
 
                 if (Directory.Exists(Tempdir))
-                    Utils.DeleteDirectory(Tempdir);
+                    Tempdir.DeleteDirectory();
             }
             catch
             {
@@ -280,8 +282,10 @@ namespace Arcas.BL.TFS
             var vcs = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(serverUri)
                         .GetService<VersionControlServer>();
 
-            var dcsf = new DialogChooseServerFolder(vcs, null);
-            dcsf.ShowInTaskbar = false;
+            var dcsf = new DialogChooseServerFolder(vcs, null)
+            {
+                ShowInTaskbar = false
+            };
 
             return dcsf.ShowDialog(parentWindow) != DialogResult.OK
                 ? null
@@ -330,16 +334,16 @@ namespace Arcas.BL.TFS
             if (wip == null)
                 throw new ArgumentException("Не удалось определить проект");
 
-#pragma warning disable IDE0059 // Ненужное присваивание значения
             Func<QueryItem, QueryItemNode> recSeek = null;
-#pragma warning restore IDE0059 // Ненужное присваивание значения
 
             recSeek = new Func<QueryItem, QueryItemNode>(itm =>
             {
-                var qin = new QueryItemNode();
+                var qin = new QueryItemNode
+                {
+                    Name = itm.Name,
+                    ProjectName = projectName
+                };
 
-                qin.Name = itm.Name;
-                qin.ProjectName = projectName;
                 var folder = itm as QueryFolder;
                 var defQuery = itm as QueryDefinition;
                 if (folder == null)
@@ -349,7 +353,7 @@ namespace Arcas.BL.TFS
 
                 if (folder != null)
                 {
-                    foreach (QueryItem itemInfolder in folder)
+                    foreach (var itemInfolder in folder)
                     {
                         if (itemInfolder is QueryFolder qflr && qflr.Count == 0)
                             continue;
@@ -373,7 +377,7 @@ namespace Arcas.BL.TFS
                 return qin;
             });
 
-            foreach (QueryItem item in wip)
+            foreach (var item in wip)
             {
                 var nitmNode = recSeek(item);
                 if (nitmNode != null)
@@ -403,10 +407,7 @@ namespace Arcas.BL.TFS
             var tscs = tpc.GetService<TeamSettingsConfigurationService>();
             var team = tscs.GetTeamConfigurationsForUser(new[] { prject.Uri }).FirstOrDefault();
 
-            var query = wis.GetQueryDefinition(queryitem.QueryID.Value);
-
-            if (query == null)
-                throw new ArgumentOutOfRangeException("Не найден запрос с именем " + queryitem.Name);
+            var query = wis.GetQueryDefinition(queryitem.QueryID.Value) ?? throw new ArgumentOutOfRangeException("Не найден запрос с именем " + queryitem.Name);
 
             var queryText = query.QueryText;
 
@@ -460,7 +461,7 @@ namespace Arcas.BL.TFS
             vcs.DownloadFile(selectedItem.ServerItem, tempFile);
 
             UpdateDbSetting sets = null;
-            String msg = "Файл настроек не расшифрован. Либо выбран не файл настроек, либо еще чо.";
+            var msg = "Файл настроек не расшифрован. Либо выбран не файл настроек, либо еще чо.";
             try
             {
                 sets = File.ReadAllBytes(tempFile).DeserializeAesDecrypt<UpdateDbSetting>(selectedItem.ServerItem);

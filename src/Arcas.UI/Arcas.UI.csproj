@@ -14,20 +14,18 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
+    <OutputPath>..\_Build\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -39,8 +37,8 @@
     <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cav.Core" Version="7.3.6" />
-    <PackageReference Include="Cav.WinForms" Version="4.0.1" />
+    <PackageReference Include="Cav.Core" Version="8.11.2" />
+    <PackageReference Include="Cav.WinForms" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -60,12 +58,6 @@
     </Compile>
     <Compile Include="Controls\UpdaterDB.Designer.cs">
       <DependentUpon>UpdaterDB.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\IbmMqTest.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\IbmMqTest.Designer.cs">
-      <DependentUpon>IbmMqTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\WsdlXsdCsGen.cs">
       <SubType>UserControl</SubType>
@@ -100,14 +92,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cav.snk" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Controls\UpdaterDB.resx">
       <DependentUpon>UpdaterDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\IbmMqTest.resx">
-      <DependentUpon>IbmMqTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\WsdlXsdCsGen.resx">
       <DependentUpon>WsdlXsdCsGen.cs</DependentUpon>
@@ -132,11 +118,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
