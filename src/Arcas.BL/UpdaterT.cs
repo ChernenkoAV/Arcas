@@ -61,10 +61,10 @@ namespace Arcas.Update
 
             var lastRel = releases
                 .Where(x => !prerelease.HasValue || x.prerelease == prerelease)
-                .OrderByDescending(x => x.name)
+                .OrderByDescending(x => x.name ?? x.tag_name)
                 .FirstOrDefault();
 
-            if (new[] { lastRel?.name, CurrentVersion() }.OrderByDescending(x => x).FirstOrDefault() == CurrentVersion())
+            if (new[] { lastRel?.name ?? lastRel?.tag_name, CurrentVersion() }.OrderByDescending(x => x).FirstOrDefault() == CurrentVersion())
                 return;
 
             var asset = lastRel.assets.FirstOrDefault(x => x.name.EndsWith(".zip"));
@@ -101,7 +101,7 @@ namespace Arcas.Update
             public DateTime published_at { get; set; }
             public Uri html_url { get; set; }
             public String name { get; set; }
-
+            public String tag_name { get; set; }
             public List<asset> assets { get; set; } = new List<asset>();
         }
 #pragma warning restore IDE1006 // Стили именования
