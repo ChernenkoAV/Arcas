@@ -189,7 +189,7 @@ namespace Arcas.BL
 
                     sendStat("Обработка файла версионности");
 
-                    var verFileName = "_lastVer.xml";
+                    var verFileName = "lastVer.json";
                     var pathVerFile = Path.Combine(tfsbl.Tempdir, verFileName);
 
                     if (tfsbl.GetLastFile(verFileName) == 0)
@@ -210,10 +210,9 @@ namespace Arcas.BL
                     if (!tfsbl.CheckOut(pathVerFile))
                         return "Извлечение файла текущей версии неуспешно. Повторите позже";
 
-                    var curVerDB = pathVerFile.XMLDeserializeFromFile<VerDB>() ?? new VerDB();
-
-                    curVerDB.VersionBD += 1;
-                    curVerDB.DateVersion = new DateTimeOffset(DateTime.Now).DateTime;
+                    var cvo = pathVerFile.JsonDeserealizeFromFile<VerDB>();
+                    cvo.VersionBD += 1;
+                    var curVerDB = String.Format(upsets.FormatVersion, cvo.VersionBD, DateTime.Now);
 
                     var scts = new List<string>();
 
@@ -268,7 +267,8 @@ namespace Arcas.BL
                         var fileNameNewVer = Path.Combine(tfsbl.Tempdir, curVerDB + ".sql");
 
                         File.WriteAllText(fileNameNewVer, sb.ToString());
-                        curVerDB.XMLSerialize(pathVerFile);
+                        File.WriteAllText(pathVerFile, cvo.JsonSerialize());
+
                         tfsbl.AddFile(fileNameNewVer);
 
                         sendStat("Кладем в шельву в TFS");

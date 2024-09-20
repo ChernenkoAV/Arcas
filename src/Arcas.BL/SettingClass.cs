@@ -21,17 +21,6 @@ namespace Arcas.Settings
     public class VerDB
     {
         public long VersionBD { get; set; }
-        public DateTime DateVersion { get; set; } = DateTime.Now;
-        public override string ToString() =>
-            $"{VersionBD.ToString().PadLeft(6, '0')} {DateVersion:yyyy-MM-dd}";
-
-        public static implicit operator String(VerDB ver)
-        {
-            if (ver == null)
-                return null;
-
-            return ver.ToString();
-        }
     }
 
     public class TfsDbLink
@@ -94,6 +83,10 @@ namespace Arcas.Settings
         /// </summary>
         public String ScriptPartAfterBodyWithTran { get; set; }
 
+        /// <summary>
+        /// Формат версии
+        /// </summary>
+        public string FormatVersion { get; set; }
         /// <summary>
         /// Скрипт измемения значения версии БД
         /// </summary>

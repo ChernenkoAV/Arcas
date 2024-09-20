@@ -41,6 +41,7 @@
             this.btPathFoldertoFileSet = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label14 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tbFormatBinFormat = new System.Windows.Forms.TextBox();
             this.tbFormatBinPrefix = new System.Windows.Forms.TextBox();
@@ -65,6 +66,7 @@
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.export = new System.Windows.Forms.Button();
             this.import = new System.Windows.Forms.Button();
+            this.tbFormatVersion = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -187,6 +189,8 @@
             // panel2
             // 
             this.panel2.AutoScroll = true;
+            this.panel2.Controls.Add(this.tbFormatVersion);
+            this.panel2.Controls.Add(this.label14);
             this.panel2.Controls.Add(this.groupBox3);
             this.panel2.Controls.Add(this.tbScriptUpdateVer);
             this.panel2.Controls.Add(this.label12);
@@ -208,13 +212,22 @@
             this.panel2.Size = new System.Drawing.Size(502, 359);
             this.panel2.TabIndex = 0;
             // 
+            // label14
+            // 
+            this.label14.Location = new System.Drawing.Point(3, 217);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(443, 29);
+            this.label14.TabIndex = 10028;
+            this.label14.Text = "Формат версии. параметр {0} - номер версии, параметр {1} - текущие дата-время. Пр" +
+    "имер: \"{0} {1:yyyy-MM-dd}\" -> \"1234 1989-12-25\"\r\n";
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tbFormatBinFormat);
             this.groupBox3.Controls.Add(this.tbFormatBinPrefix);
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Location = new System.Drawing.Point(6, 453);
+            this.groupBox3.Location = new System.Drawing.Point(6, 508);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(440, 44);
             this.groupBox3.TabIndex = 10027;
@@ -259,7 +272,7 @@
             // 
             // tbScriptUpdateVer
             // 
-            this.tbScriptUpdateVer.Location = new System.Drawing.Point(6, 269);
+            this.tbScriptUpdateVer.Location = new System.Drawing.Point(6, 324);
             this.tbScriptUpdateVer.Multiline = true;
             this.tbScriptUpdateVer.Name = "tbScriptUpdateVer";
             this.tbScriptUpdateVer.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -268,13 +281,13 @@
             // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(3, 221);
+            this.label12.Location = new System.Drawing.Point(3, 276);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(451, 46);
+            this.label12.Size = new System.Drawing.Size(443, 46);
             this.label12.TabIndex = 10025;
             this.label12.Text = "Скрипт обновления значения версии в БД. Идет после основного тела скрипта изменен" +
-    "ий. Текстовка оборачиваются в String.Format(... Параметр: 0 - сгенернная версия " +
-    "(String) формат \"000000 yyyy-MM-dd\"\r\n";
+    "ий. Текстовка оборачиваются в String.Format(... Параметр: 0 - сгенернная строка " +
+    "из предыдущего пункта\r\n";
             // 
             // btScriptFolder
             // 
@@ -288,7 +301,7 @@
             // 
             // tbPartAfterScript
             // 
-            this.tbPartAfterScript.Location = new System.Drawing.Point(6, 356);
+            this.tbPartAfterScript.Location = new System.Drawing.Point(6, 411);
             this.tbPartAfterScript.Multiline = true;
             this.tbPartAfterScript.Name = "tbPartAfterScript";
             this.tbPartAfterScript.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -297,7 +310,7 @@
             // 
             // label10
             // 
-            this.label10.Location = new System.Drawing.Point(3, 324);
+            this.label10.Location = new System.Drawing.Point(3, 379);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(447, 28);
             this.label10.TabIndex = 10022;
@@ -400,6 +413,7 @@
             this.tbNumberTask.Size = new System.Drawing.Size(260, 20);
             this.tbNumberTask.TabIndex = 10014;
             this.tbNumberTask.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbNumberTask_KeyPress);
+            this.tbNumberTask.Validating += new System.ComponentModel.CancelEventHandler(this.tbNumberTask_Validating);
             // 
             // errorProvider
             // 
@@ -426,6 +440,13 @@
             this.import.Text = "Импорт";
             this.import.UseVisualStyleBackColor = true;
             this.import.Click += new System.EventHandler(this.import_Click);
+            // 
+            // tbFormatVersion
+            // 
+            this.tbFormatVersion.Location = new System.Drawing.Point(6, 249);
+            this.tbFormatVersion.Name = "tbFormatVersion";
+            this.tbFormatVersion.Size = new System.Drawing.Size(306, 20);
+            this.tbFormatVersion.TabIndex = 10029;
             // 
             // CreateSettingUpdater
             // 
@@ -501,5 +522,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button import;
         private System.Windows.Forms.Button export;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox tbFormatVersion;
     }
 }
