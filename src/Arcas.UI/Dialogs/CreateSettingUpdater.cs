@@ -78,6 +78,7 @@ namespace Arcas.Settings
                 ScriptPartBeforeBodyWithTran = tbPartBeforescript.Text.GetNullIfIsNullOrWhiteSpace(),
                 ScriptPartAfterBodyWithTran = tbPartAfterScript.Text.GetNullIfIsNullOrWhiteSpace(),
                 ScriptUpdateVer = tbScriptUpdateVer.Text.GetNullIfIsNullOrWhiteSpace(),
+                FormatVersion = tbFormatVersion.Text.GetNullIfIsNullOrWhiteSpace(),
                 FormatBinary = new FormatBinaryData()
                 {
                     Prefix = tbFormatBinPrefix.Text,
@@ -134,6 +135,7 @@ namespace Arcas.Settings
             tbPartBeforescript.Text = upsets.ScriptPartBeforeBodyWithTran;
             tbPartAfterScript.Text = upsets.ScriptPartAfterBodyWithTran;
             tbScriptUpdateVer.Text = upsets.ScriptUpdateVer;
+            tbFormatVersion.Text = upsets.FormatVersion;
 
             var formatBin = upsets.FormatBinary ?? new FormatBinaryData();
             tbFormatBinPrefix.Text = formatBin.Prefix;
@@ -312,6 +314,14 @@ namespace Arcas.Settings
             var folder = TfsRoutineBL.ShowDialogChooseServerFolder(this, new Uri(tbTfsProject.Text));
             tbSetFileServerFolder.Text = folder;
             tbSetFileServerFolder_Validating(null, null);
+        }
+
+        private void tbNumberTask_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (tbNumberTask.Text.IsNullOrWhiteSpace())
+                errorTracker.SetError(tbNumberTask, "Не указан номер таски для чекина настроек");
+            else
+                errorTracker.SetError(tbNumberTask, null);
         }
 
         private void cmbDbConectionType_SelectedIndexChanged(object sender, EventArgs e)
