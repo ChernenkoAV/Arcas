@@ -1,0 +1,88 @@
+<Project>
+
+    <PropertyGroup>
+        <Configurations>Debug;Release</Configurations>
+
+        <BuildInParallel>false</BuildInParallel>
+        <StopOnFirstFailure>true</StopOnFirstFailure>
+        <ContinueOnError>false</ContinueOnError>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*Undefined*'">
+        <DevEnvDir>*Undefined*</DevEnvDir>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <RootSolutionDir>$(MSBuildThisFileDirectory)</RootSolutionDir>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+        <SignAssembly>true</SignAssembly>
+        <DelaySign>false</DelaySign>
+        <AssemblyOriginatorKeyFile>$(RootSolutionDir)cav.snk</AssemblyOriginatorKeyFile>
+
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>portable</DebugType>
+        <Optimize>false</Optimize>
+
+        <DefineConstants>TRACE</DefineConstants>
+
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <CopyDocumentationFileToOutputDirectory>false</CopyDocumentationFileToOutputDirectory>
+        <NoWarn>$(NoWarn);CS1591;CS1573;CS1712</NoWarn>
+
+        <WarningLevel>0</WarningLevel>
+        <AnalysisLevel>none</AnalysisLevel>
+
+        <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+        <Deterministic>true</Deterministic>
+
+        <!--https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/configuring-garbage-collection-->
+        <!--<ServerGarbageCollection>true</ServerGarbageCollection>
+        <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>-->
+
+        <!--<RuntimeIdentifier>linux-x64</RuntimeIdentifier>-->
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <WarningLevel>4</WarningLevel>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+        <!--<ProduceOnlyReferenceAssembly>true</ProduceOnlyReferenceAssembly>-->
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
+        <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+        <IsLinux>true</IsLinux>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) AND '$(RuntimeIdentifier)' == 'linux-x64'">
+        <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+        <IsLinux>true</IsLinux>
+    </PropertyGroup>
+
+</Project>

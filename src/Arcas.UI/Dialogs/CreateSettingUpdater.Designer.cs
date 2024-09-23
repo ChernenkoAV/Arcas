@@ -1,4 +1,4 @@
-﻿namespace Arcas.Settings
+namespace Arcas.Settings
 {
     partial class CreateSettingUpdater
     {
@@ -41,6 +41,7 @@
             this.btPathFoldertoFileSet = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.tbFormatVersion = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tbFormatBinFormat = new System.Windows.Forms.TextBox();
@@ -66,7 +67,6 @@
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.export = new System.Windows.Forms.Button();
             this.import = new System.Windows.Forms.Button();
-            this.tbFormatVersion = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -211,6 +211,14 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(502, 359);
             this.panel2.TabIndex = 0;
+            // 
+            // tbFormatVersion
+            // 
+            this.tbFormatVersion.Location = new System.Drawing.Point(6, 249);
+            this.tbFormatVersion.Name = "tbFormatVersion";
+            this.tbFormatVersion.Size = new System.Drawing.Size(306, 20);
+            this.tbFormatVersion.TabIndex = 10029;
+            this.tbFormatVersion.Validating += new System.ComponentModel.CancelEventHandler(this.tbFormatVersion_Validating);
             // 
             // label14
             // 
@@ -440,13 +448,6 @@
             this.import.Text = "Импорт";
             this.import.UseVisualStyleBackColor = true;
             this.import.Click += new System.EventHandler(this.import_Click);
-            // 
-            // tbFormatVersion
-            // 
-            this.tbFormatVersion.Location = new System.Drawing.Point(6, 249);
-            this.tbFormatVersion.Name = "tbFormatVersion";
-            this.tbFormatVersion.Size = new System.Drawing.Size(306, 20);
-            this.tbFormatVersion.TabIndex = 10029;
             // 
             // CreateSettingUpdater
             // 

@@ -1,0 +1,126 @@
+<Project>
+
+    <!--<ItemGroup>
+        <None Remove="$(MSBuildProjectFile).vspscc" />
+    </ItemGroup>-->
+
+    <PropertyGroup>
+        <IsExeProject>$(OutputType.ToLower().Equals('exe').ToString().ToLower())</IsExeProject>
+    </PropertyGroup>
+
+    <!--<PropertyGroup Condition="'$(TargetFramework)' != 'v4.8' AND '$(IsLinux)' == 'true'">
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' != 'v4.8' AND '$(IsLinux)' != 'true'">
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    </PropertyGroup>-->
+
+    <!--<PropertyGroup Condition="'$(IsExeProject)' == 'true' AND '$(Configuration)' != 'Debug' AND '$(IsTestProject)' != 'true'">
+        <NoWarn>$(NoWarn);NETSDK1201</NoWarn>
+        <SelfContained>true</SelfContained>
+    </PropertyGroup>-->
+
+    <!--<PropertyGroup Condition="'$(IsTestProject)' == 'true' AND '$(Configuration)' == 'Degug'">
+        <RunSettingsFilePath>$(MSBuildProjectDirectory)\..\.runsettings</RunSettingsFilePath>
+    </PropertyGroup>-->
+
+    <Target Name ="DesableDocFileForAcselerateBuild" BeforeTargets="CollectUpToDateCheckBuiltDesignTime">
+        <PropertyGroup>
+            <_DocumentationFileProduced>$(CopyDocumentationFileToOutputDirectory)</_DocumentationFileProduced>
+        </PropertyGroup>
+    </Target>
+
+    <ItemGroup Condition="'$(TargetFramework)' != 'net4.8'">
+        <Using Include="Cav" />
+        <Using Include="System.ComponentModel" />
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(TargetFramewor)' != 'net4.8'">
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net4.8'">
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <!--<RuntimeIdentifier>win</RuntimeIdentifier>-->
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <NoWarn>$(NoWarn);nullable</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <Compile Include="$(RootSolutionDir)/IsExternalInit_netstandard20.cs">
+            <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </Compile>
+    </ItemGroup>
+
+    <Target Name="GenAssemblyAttributes" BeforeTargets="BeforeCompile">
+
+        <PropertyGroup>
+            <VersionFile>$([System.IO.Path]::Combine('$(BaseIntermediateOutputPath)','AssemblyAttributes_$(TargetFramework)$(DefaultLanguageSourceExtension)'))</VersionFile>
+            <VerFile>1.2.3.4</VerFile>
+            <AssTitle>$(AssemblyName) $(Configuration) $(TargetFramework)</AssTitle>
+            <AssDescription></AssDescription>
+        </PropertyGroup>
+
+        <PropertyGroup Condition="'$(Configuration)' == 'Release' ">
+            <VerFile>$([System.DateTime]::Now.Tostring("yyyy.MM.dd.0"))</VerFile>
+            <AssTitle>$(AssTitle) $([System.DateTime]::Now.Tostring("dd.MM.yyyy HH.mm"))</AssTitle>
+            <AssDescription>$([System.DateTime]::Now.Tostring("dd.MM.yyyy HH.mm"))</AssDescription>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <AssemblyAttributes Include="AssemblyTitle">
+                <_Parameter1>$(AssTitle)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyVersion">
+                <_Parameter1>$(VerFile)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyFileVersion">
+                <_Parameter1>$(VerFile)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyInformationalVersion">
+                <_Parameter1>$(ApplicationVersion)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyDescription">
+                <_Parameter1>$(AssDescription)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyCopyright">
+                <_Parameter1>Copyright $([System.DateTime]::Now.ToString("yyyy"))©</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyProduct">
+                <_Parameter1></_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyConfiguration">
+                <_Parameter1>$(Configuration)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyCompany">
+                <_Parameter1>$()</_Parameter1>
+            </AssemblyAttributes>
+        </ItemGroup>
+
+        <ItemGroup Condition="'$(RepositoryUrl)' != ''">
+            <AssemblyAttributes Include="AssemblyMetadataAttribute">
+                <_Parameter1>RepositoryUrl</_Parameter1>
+                <_Parameter2>$(RepositoryUrl)</_Parameter2>
+            </AssemblyAttributes>
+        </ItemGroup>
+
+        <MakeDir Directories="$(BaseIntermediateOutputPath)"/>
+        <WriteCodeFragment Language="C#"
+                           OutputFile="$(VersionFile)"
+                           AssemblyAttributes="@(AssemblyAttributes)"/>
+        <ItemGroup>
+            <Compile Include="$(VersionFile)"/>
+        </ItemGroup>
+    </Target>
+    <!--
+    <Target Name="TestValue" BeforeTargets="BeforeCompile">
+        <Message Importance="high" Text="MSBuildThisFileDirectory $(MSBuildThisFileDirectory)" />
+        <Message Importance="high" Text="SolutionDir $(SolutionDir)" />
+        <Message Importance="high" Text="DevEnvDir $(DevEnvDir)" />
+    </Target>
+-->
+</Project>
