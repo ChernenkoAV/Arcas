@@ -14,7 +14,7 @@ public class TFSDBList : BindingList<TfsDbLink>
 
     public static implicit operator TFSDBList(List<TfsDbLink> lfd) => new(lfd);
 
-    public static implicit operator List<TfsDbLink>(TFSDBList tdbl) => new(tdbl);
+    public static implicit operator List<TfsDbLink>(TFSDBList tdbl) => [.. tdbl];
 }
 
 #endregion

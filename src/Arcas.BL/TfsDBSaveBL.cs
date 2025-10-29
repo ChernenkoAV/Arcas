@@ -91,7 +91,7 @@ public class TfsDBSaveBL
             {
                 a = a.Trim();
 
-                var colStr = a.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                var colStr = a.Split([Environment.NewLine], StringSplitOptions.None);
 
                 for (var i = 0; i < colStr.Length; i++)
                     colStr[i] = colStr[i].TrimEnd();
@@ -354,7 +354,7 @@ public class TfsDBSaveBL
         var regex = new Regex(@"(\n|\r|\n\r|^)\s*GO\s*(\n\r|\n|\r|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
         sqlText = regex.Replace(sqlText, separator);
 
-        var res = new List<String>(sqlText.Split(new string[] { separator }, StringSplitOptions.None));
+        var res = new List<String>(sqlText.Split([separator], StringSplitOptions.None));
 
         res.RemoveAll(new Predicate<string>(string.IsNullOrEmpty));
 

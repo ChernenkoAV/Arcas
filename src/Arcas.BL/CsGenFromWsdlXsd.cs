@@ -282,6 +282,24 @@ public class CsGenFromWsdlXsd
         string fileinTemp;
 
         string importName;
+
+        foreach (var item in xdocfile.Descendants(xsdNS + "include"))
+        {
+            var locationAttrib = item.Attribute("schemaLocation") ?? throw new ArgumentException($"Отсутствует атрибут schemaLocation в элементе {item.Name}");
+
+            if (locationAttrib.Value.IsNullOrWhiteSpace())
+                throw new ArgumentException($"Не заполнен атрибут schemaLocation в элементе {item.Name}");
+
+            importName = locationAttrib.Value.ComputeMD5ChecksumString().ToString();
+            fileinTemp = Path.Combine(tempDir, importName);
+
+            lartImp(locationAttrib, fileinTemp);
+
+            locationAttrib.Value = fileinTemp;
+
+            res.Add(fileinTemp);
+        }
+
         foreach (var item in xdocfile.Descendants(xsdNS + "import"))
         {
             var locationAttrib = item.Attribute("schemaLocation") ?? throw new ArgumentException($"Отсутствует атрибут schemaLocation в элементе {item.Name}");
