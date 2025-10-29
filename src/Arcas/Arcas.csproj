@@ -4,7 +4,7 @@
         <OutputType>WinExe</OutputType>
         <OutputPath>..\_Build\$(Configuration)\</OutputPath>
         <ApplicationIcon>..\gear_wheel.ico</ApplicationIcon>
-        <ApplicationVersion>0.0.6</ApplicationVersion>
+        <ApplicationVersion>0.0.7</ApplicationVersion>
         <StartupObject>Arcas.Program</StartupObject>
     </PropertyGroup>
 
